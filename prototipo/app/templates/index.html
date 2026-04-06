@@ -13,6 +13,24 @@
     <a href="{{ url_for('remove_cookie') }}">Remove Cookie</a><br>
     <a href="{{ url_for('login') }}">Login</a><br>
 
+    <script type="text/javascript">
+        function deleteAluno(pid) {
+            fetch('{{ url_for("delete", pid=pid) }}' + pid, {
+                method: 'DELETE'
+            }).then(response => {
+                if(response.ok){
+                    window.location.reload();
+                } else{
+                    console.error('Erro em deletar item com id: ', pid);
+                }
+            })
+                .catch(error => {
+                    console.error('Erro durante fetch: ', error);
+                });
+        }
+
+    </script>
+
 
 
 {% endblock %}
