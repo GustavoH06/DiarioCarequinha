@@ -8,7 +8,7 @@
 
     <ul>
     {% for alunos in alunos %}
-        <li>{{alunos}} <button onclick="deleteAluno({{ alunos.pid }})">Apagar</button><a href="{{url_for('details', pid=alunos.pid) }}">Details</a></li>
+        <li>{{alunos}} <button onclick="deleteAluno({{  alunos.pid  }})">Apagar</button><a href="{{url_for('details', pid=alunos.pid) }}">Details</a></li>
     {% endfor %}
     </ul>
 

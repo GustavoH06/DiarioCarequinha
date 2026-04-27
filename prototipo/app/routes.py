@@ -1,15 +1,20 @@
-from flask import render_template, request, render_template, session, make_response, flash
+from flask import render_template, request, render_template, session, make_response, flash, redirect, url_for
+from flask_login import login_user, logout_user, current_user, login_required
 
 from models import Alunos
+from models import User
 
-def register_routes(app, db):
+def register_routes(app, db, bcrypt):
     app.secret_key = 'SOME KEY'
 
-    
 
     @app.route('/')
     def index():
-        return render_template('index.html', message ='Index')
+        if current_user.is_authenticated:
+            return render_template('index.html')
+        else:
+            return render_template('index.html', message ='Index')
+    
     
     @app.route('/db', methods =['GET', 'POST'])
     def database():
@@ -80,6 +85,22 @@ def register_routes(app, db):
         response.set_cookie('cookie_name', expires=0)
         return response
 
+    @app.route('/signup', methods=['GET', 'POST'])
+    def signup():
+        if request.method == 'GET':
+            return render_template('signup.html')
+        elif request.method == 'POST':
+            username = request.form.get('username')
+            password = request.form.get('password')
+
+            hashed_password = bcrypt.generate_password_hash(password)
+
+            user = User(username=username, password=hashed_password)
+
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('index'))
+
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'GET':
@@ -87,12 +108,19 @@ def register_routes(app, db):
         elif request.method == 'POST':
             username = request.form.get('username')
             password = request.form.get('password')
-            if username == 'terez' and password == 'password':
-                flash('Login')            
-                return render_template('index.html', message = '')
+            
+            user = User.query.filter(User.username == username).first()
+
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user)            
+                return redirect(url_for('index'))
             else:
-                flash('Login failed')
-                return render_template('index.html', message='')
+                return 'failed'
+    @app.route('/logout')
+    def logout():
+        logout_user()
+        return 'Success'
+    
 
     @app.route('/testes')
     def outro():
