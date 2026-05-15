@@ -56,7 +56,7 @@ i {
 .main-container{
   color: #313131;
   font-size: 23px;
-  padding: 150px 100px;
+  padding: 100px 50px;
   width: 100%;
   margin-left: 65px;
   
@@ -195,4 +195,62 @@ i {
   width: 100%;
   border-bottom: 2px solid #313131;
   height: 20px;
+}
+
+/*Listas*/
+
+.list-container{
+  display: flex;
+  flex-direction: column;
+  margin: 0px 50px;
+  column-gap: 30px;
+}
+
+.list-container h1{
+  color: #AF9D37;
+  margin:5;
+  margin-left: 30px;
+}
+
+.filter-container{
+  display: flex;
+  flex-direction: row;
+  flex:1;
+  margin-bottom: 20px;
+  width: 100%;
+  gap: 20px;
+}
+
+.filter-input{
+  display: grid;
+  flex:1;
+  grid-template-columns: auto auto;
+  gap: 20px;
+  
+}
+
+.filter-input input{
+  height: 40px;
+  background-color: #e2e2e2;
+}
+
+.filter-input input[type="text"]{
+  font-size: 20px;
+  padding-left: 30px
+}
+
+.filter-buttons{
+  display: grid;
+  grid-template-columns: auto;
+  gap: 20px;
+  
+}
+
+.filter-buttons i{
+  display: flex;
+  background-color: #717171;
+  border-radius: 6px;
+  color: white;
+  padding: 0px 40px;
+  align-items: center;
 }
