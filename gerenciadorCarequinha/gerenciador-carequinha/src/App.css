@@ -8,25 +8,20 @@ body{
   color: #eaecef;
 }
 
-.app{
+.app-container{
   display: flex;
 }
 
 .sidenav{
   background-color: #AEE1FF;
   height: 100vh;
-  padding: 0 10px;
-  
+  padding: 5px 10px;
+  z-index: 100;
+  position: fixed;
 }
-
-.sidenav.active{
-}
-
-
-
 
 .sidenav-nav-item{
-  margin: 20px 0;
+  margin: 5px 0;
   padding: 10px;
   display: flex;
   font-size: 25px;
@@ -37,16 +32,167 @@ body{
 
 .sidenav-nav-link{
   display:flex;
+  white-space: nowrap;
   column-gap: 10px;
   list-style-type: none;
   text-decoration: none;
   justify-content: space-between;
   color: #313131;
 
-  
+}
+
+i {
+  -webkit-text-stroke: .8px;
 }
 
 .sidenav-nav-item:hover,
 .sidenav-nav-item:active{
   background: #76C5F2;
+}
+
+
+/*Main body*/
+
+.main-container{
+  color: #313131;
+  font-size: 23px;
+  padding: 150px 100px;
+  width: 100%;
+  margin-left: 65px;
+  
+}
+
+.home-container{
+  display: flex;
+  flex:1;
+  margin: 0;
+  column-gap: 30px;
+}
+
+.dashboard-column{
+  width: 60%;
+}
+
+.dashboard-column h2{
+  
+  margin: 0;
+  margin-left: 30px;
+}
+
+.home-title{
+  
+  border-bottom: solid #D9D9D9;
+}
+
+.dashboard{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.dashBlock-container{
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  
+}
+
+.dash-block{
+  font-size: 20px;
+  border-radius: 6px;
+  margin: 30px;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  gap: 30px;
+}
+
+.dashblock-icon{
+  border-radius: 6px;
+  font-size: 60px;
+  padding: 10px;
+}
+
+.dashBlock-right{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.list-container{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-list{
+  font-size: 20px;
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  margin: 5px;
+  padding: 10px 40px;
+  border-radius: 6px;
+}
+
+.item-list.header{
+  background-color: #AEE1FF;
+  
+}
+
+.item-list.content{
+  background-color: #EAF0FF;
+  padding: 10px 50px;
+  
+}
+
+.item-list.content i{
+  position: absolute;
+}
+
+.notes-column{
+  flex:1;
+  background-color: #AEE1FF;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.notes-column h3{
+  margin: 20px 0px 5px 20px;
+}
+
+.notes-container{
+  font-size: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #FDFDFD;
+  border-radius: 6px;
+}
+
+.notes-line-container{
+  display: flex;
+  flex-direction: column;
+  gap:20px;
+  width: 100%;
+}
+
+.notes-header{
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.notes-line{
+  flex: 1;
+  border-bottom: 2px solid #313131;
+  height: 20px;
+}
+
+.notes-container .notes-line{
+  width: 100%;
+  border-bottom: 2px solid #313131;
+  height: 20px;
 }

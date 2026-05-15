@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
-import Navbar from './components/Navbar'
+import Navbar from './layouts/Navbar'
 import './App.css'
 import axios from 'axios'
 import { BrowserRouter as Router, Routes, Route } from "react-router";
@@ -32,17 +32,19 @@ function App() {
 
   return (
     <Router>
-      <div className="app">
+      <div className="app-container">
         <Navbar/>
-        <Routes>
-          <Route path='home' element={<Home/>}></Route>
-          <Route path='sala-info' element={<SalaInfo/>}></Route>
-          <Route path='sala-form' element={<SalaForm/>}></Route>
-          <Route path='sala-List' element={<SalaList/>}></Route>
-          <Route path='aluno-list' element={<AlunoList/>}></Route>
-          <Route path='aluno-info' element={<AlunoInfo/>}></Route>
-          <Route path='aluno-form' element={<AlunoForm/>}></Route>
-        </Routes>
+        <div className="main-container">
+          <Routes>
+            <Route path='home' element={<Home/>}></Route>
+            <Route path='sala-info' element={<SalaInfo/>}></Route>
+            <Route path='sala-form' element={<SalaForm/>}></Route>
+            <Route path='sala-List' element={<SalaList/>}></Route>
+            <Route path='aluno-list' element={<AlunoList/>}></Route>
+            <Route path='aluno-info' element={<AlunoInfo/>}></Route>
+            <Route path='aluno-form' element={<AlunoForm/>}></Route>
+          </Routes>
+        </div>
       </div>
     </Router>
   )
