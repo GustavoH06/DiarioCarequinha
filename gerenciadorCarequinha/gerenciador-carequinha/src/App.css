@@ -137,6 +137,12 @@ i {
   border-radius: 6px;
 }
 
+.item-list label{
+  flex: 1 1 0px;
+  width: 0;
+  
+}
+
 .item-list.header{
   background-color: #AEE1FF;
   
@@ -202,14 +208,14 @@ i {
 .list-container{
   display: flex;
   flex-direction: column;
-  margin: 0px 50px;
+  padding: 0px 50px;
   column-gap: 30px;
 }
 
-.list-container h1{
+h1 {
   color: #AF9D37;
-  margin:5;
-  margin-left: 30px;
+  margin: 0;
+  padding: 30px;
 }
 
 .filter-container{
@@ -254,3 +260,80 @@ i {
   padding: 0px 40px;
   align-items: center;
 }
+
+.list-items{
+  display: grid;
+  flex-direction: column;
+  column-gap: 30px;
+}
+
+/*Forms*/
+h2{
+  color: #AF9D37;
+  margin: 0;
+  padding: 10px;
+
+}
+
+.form-body{
+  background-color: #EEEEEE;
+  padding: 20px;
+  border-radius: 6px;
+
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+    "nome nome idade"
+    "data tel sexo"
+    "pais pais ."
+    "end end numero"
+    "sala sala .";
+  gap: 20px;
+  
+}
+
+.form-input{
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input.nome {
+  grid-area: nome;
+}
+
+.form-input.data {
+  grid-area: data;
+}
+
+.form-input.tel {
+  grid-area: tel;
+}
+
+.form-input.pais {
+  grid-area: pais;
+}
+
+.form-input.end {
+  grid-area: end;
+}
+
+.form-input.sala {
+  grid-area: sala;
+}
+
+.form-input.idade {
+  grid-area: idade;
+}
+
+.form-input.sexo {
+  grid-area: sexo;
+}
+
+.form-input.numero {
+  grid-area: numero;
+}
+
+
+

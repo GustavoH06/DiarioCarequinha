@@ -1,13 +1,13 @@
 function AlunoList(){
     return(
         <div className="list-container">
-            <h1>Lista de Salas</h1>
+            <h1>Lista de Alunos</h1>
             <div className="filter-container">
                 <div className="filter-input">
-                    <input type="text" name="name" placeholder="Nome"/>
-                    <input type="text" name="age" placeholder="Tipo Turma"/>
-                    <input type="text" name="job" placeholder="Id"/>
-                    <input type="text" name="a" placeholder="Turno"/>
+                    <input type="text" name="aluno-name" placeholder="Nome"/>
+                    <input type="text" name="aluno-turno" placeholder="Turno"/>
+                    <input type="text" name="aluno-id" placeholder="Id"/>
+                    <input type="text" name="aluno-sala" placeholder="Sala"/>
                 </div>
                 <div className="filter-buttons">
                     <i class="bi bi-trash"></i>
@@ -15,23 +15,21 @@ function AlunoList(){
                 </div>
             </div>
 
-            <div className="salas-list">
-                <div className="list-container">
-                    <div className="item-list header">
-                        <label>Id</label>
-                        <label>Nome</label>
-                        <label>Tipo</label>
-                        <label>Turno</label>
-                        <label>Alunos</label>
-                    </div>
+            <div className="list-items">
+                <div className="item-list header">
+                    <label>Id</label>
+                    <label>Nome</label>
+                    <label>Sala</label>
+                    <label>Sexo</label>
+                    <label>Idade</label>
+                </div>
 
-                    <div className="item-list content">
-                        <label>1</label>
-                        <label>Berçario 1</label>
-                        <label>Berçario</label>
-                        <label>Manhã</label>
-                        <label>17</label>
-                    </div>
+                <div className="item-list content">
+                    <label>1</label>
+                    <label>Kaique Fernandes</label>
+                    <label>Berçario 1</label>
+                    <label>M</label>
+                    <label>6</label>
                 </div>
             </div>
         </div>
