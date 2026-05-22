@@ -2,16 +2,12 @@ import React, { useState } from 'react';
 
   const SalaForm = () => {
     const [formData, setFormData] = useState({
-    nome: '',
-    idade: '',
-    dataNascimento: '',
-    telefone: '',
-    sexo: 'menino',
-    nomePai: '',
-    nomeMae: '',
-    endereco: '',
-    numero: '',
-    sala: 'maternal2'
+    nomeSala: '',
+    tipoSala: '',
+    turnoSala: '',
+    horarioInicio: '',
+    horarioTermino: '',
+    alunos: ''
   });
 
   const handleChange = (e) => {
@@ -33,180 +29,100 @@ import React, { useState } from 'react';
 
   return (
     <div className="form-container">
-        <h1>Cadastrar Aluno</h1>
-      <div className="register-card">
-        
-        <form onSubmit={handleSubmit}>
-          <h2 className="section-title">Dados do Aluno</h2>
-          
-          <div className="form-grid">
-            {/* Linha 1: Nome | Idade */}
-            <div className="grid-row">
-              <div className="grid-cell label-cell">Nome</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="text"
-                  name="nome"
-                  placeholder="Ex: João Pedro"
-                  value={formData.nome}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="grid-cell label-cell">Idade</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="text"
-                  name="idade"
-                  placeholder="Ex: 05"
-                  value={formData.idade}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Linha 2: Data de Nascimento | Telefone | Sexo */}
-            <div className="grid-row">
-              <div className="grid-cell label-cell">Data de Nascimento</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="text"
-                  name="dataNascimento"
-                  placeholder="Ex: 03/12/2026"
-                  value={formData.dataNascimento}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="grid-cell label-cell">Telefone</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="tel"
-                  name="telefone"
-                  placeholder="Ex: (34)99765-1344"
-                  value={formData.telefone}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="grid-cell label-cell">Sexo</div>
-              <div className="grid-cell radio-cell">
-                <label className="radio-label">
-                  <input
-                    type="radio"
-                    name="sexo"
-                    value="menino"
-                    checked={formData.sexo === 'menino'}
-                    onChange={handleChange}
-                  />
-                  Menino
-                </label>
-              </div>
-            </div>
-
-            {/* Linha 3: Nome dos Pais (ocupando 2 colunas) */}
-            <div className="grid-row">
-              <div className="grid-cell label-cell">Nome dos Pais</div>
-              <div className="grid-cell input-cell" colSpan="3">
-                <input
-                  type="text"
-                  name="nomePai"
-                  placeholder="Ex: Arthur Arantes Almêida"
-                  value={formData.nomePai}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Linha 4: Nome da Mãe (sem label, apenas input) */}
-            <div className="grid-row">
-              <div className="grid-cell empty-cell"></div>
-              <div className="grid-cell input-cell" colSpan="3">
-                <input
-                  type="text"
-                  name="nomeMae"
-                  placeholder="Ex: Carmen Cristina Caixeta"
-                  value={formData.nomeMae}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Linha 5: Endereço | Número */}
-            <div className="grid-row">
-              <div className="grid-cell label-cell">Endereço</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="text"
-                  name="endereco"
-                  placeholder="Ex: Rua do Limão, Bairro do Limoeiro"
-                  value={formData.endereco}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="grid-cell label-cell">Número</div>
-              <div className="grid-cell input-cell">
-                <input
-                  type="text"
-                  name="numero"
-                  placeholder="Ex: 365"
-                  value={formData.numero}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Linha 6: Sala */}
-            <div className="grid-row">
-              <div className="grid-cell label-cell">Sala</div>
-              <div className="grid-cell radio-group-cell" colSpan="3">
-                <div className="radio-group-horizontal">
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="sala"
-                      value="maternal1"
-                      checked={formData.sala === 'maternal1'}
-                      onChange={handleChange}
-                    />
-                    Maternal 1
-                  </label>
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="sala"
-                      value="maternal2"
-                      checked={formData.sala === 'maternal2'}
-                      onChange={handleChange}
-                    />
-                    Maternal 2
-                  </label>
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="sala"
-                      value="jardim1"
-                      checked={formData.sala === 'jardim1'}
-                      onChange={handleChange}
-                    />
-                    Jardim 1
-                  </label>
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="sala"
-                      value="jardim2"
-                      checked={formData.sala === 'jardim2'}
-                      onChange={handleChange}
-                    />
-                    Jardim 2
-                  </label>
-                </div>
-              </div>
-            </div>
+      <h1>Cadastrar Sala</h1>
+      <div className="form-body">
+        <h2>Dados da Sala</h2>
+        <div className="form-grid-sala">
+          <div className="form-input nome">
+            <label>Nome Sala</label>
+            <input
+              type="text"
+              name="nomeSala"
+              placeholder="Ex: Segundo Período"
+              value={formData.nomeSala}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          <button type="submit" className="submit-button">
-            Cadastrar Aluno
-          </button>
-        </form>
+          <div className="form-input tipoSala">
+            <label>Tipo Sala</label>
+            <input
+              type="text"
+              name="tipoSala"
+              placeholder="Ex: Primário"
+              value={formData.tipoSala}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-input turnoSala">
+            <label>Turno</label>
+            <input
+              type="text"
+              name="turnoSala"
+              placeholder="Ex: Manhã"
+              value={formData.turnoSala}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-input horarioInicio">
+            <label>Horário Inicio</label>
+            <input
+              type="text"
+              name="horarioInicio"
+              placeholder="Ex: 8:00"
+              value={formData.horarioInicio}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-input horarioTermino">
+            <label>HorarioTermino</label>
+            <input
+              type="text"
+              name="horarioTermino"
+              placeholder="Ex: 12:00"
+              value={formData.horarioTermino}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-input alunosLista">
+            <label>Alunos</label>
+            <input
+              type="text"
+              name="horarioLista"
+              placeholder="Ex: João Pedro"
+              value={formData.alunos}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <br />
+      <div className="list-items">
+          <div className="item-list header">
+              <label>Id</label>
+              <label>Nome</label>
+              <label>Tipo</label>
+              <label>Turno</label>
+              <label>Alunos</label>
+          </div>
+
+          <div className="item-list content">
+              <label>1</label>
+              <label>Berçario 1</label>
+              <label>Berçario</label>
+              <label>Manhã</label>
+              <label>17</label>
+          </div>
       </div>
     </div>
   );

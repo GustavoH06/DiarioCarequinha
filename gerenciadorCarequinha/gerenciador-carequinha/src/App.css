@@ -268,6 +268,7 @@ h1 {
 }
 
 /*Forms*/
+
 h2{
   color: #AF9D37;
   margin: 0;
@@ -285,11 +286,24 @@ h2{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-areas:
-    "nome nome idade"
-    "data tel sexo"
-    "pais pais ."
-    "end end numero"
-    "sala sala .";
+    "nome nome  idade"
+    "data   tel   sexo"
+    "pais   pais  ."
+    "end    end   numero"
+    "sala   sala  .";
+  gap: 20px;
+  
+}
+
+.form-grid-sala {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+    "nome           nome            tipoSala"
+    "data           tel             sexo"
+    "turnoSala      .               ."
+    "horarioInicio  horarioTermino  ."
+    "alunosLista    alunosLista     .";
   gap: 20px;
   
 }
@@ -297,6 +311,23 @@ h2{
 .form-input{
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.form-input label{
+  font-size: 16px;
+  font-weight: 500;
+  color: #717171;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.form-input input{
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #717171;
+  font-size: 16px;
 }
 
 .form-input.nome {
@@ -334,6 +365,294 @@ h2{
 .form-input.numero {
   grid-area: numero;
 }
+
+
+.form-input.tipoSala{
+  grid-area: tipoSala;
+
+}
+
+.form-input.turnoSala{
+  grid-area: turnoSala;
+
+}
+
+.form-input.horarioInicio{
+  grid-area: horarioInicio;
+
+}
+
+.form-input.horarioTermino{
+  grid-area: horarioTermino;
+
+}
+
+.form-input.alunosLista{
+  grid-area: alunosLista;
+
+}
+
+/*Info*/
+
+.info-container h1{
+  color:#76C5F2;
+}
+
+.info-container h2{
+  color:#76C5F2;
+}
+
+.frequencia-container {
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.frequencia-list-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.5fr;
+  background: #84cef9;
+  padding: 12px 20px;
+  font-weight: 500;
+  color: #313131;
+  border-bottom: 2px solid #84cef9;
+  font-size: 16px;
+}
+
+.frequencia-student-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.frequencia-student-item {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.frequencia-student-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.5fr;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.frequencia-student-name {
+  font-weight: 600;
+  color: #717171;
+  font-size: 15px;
+}
+
+.frequencia-total-faltas {
+  color: #e53e3e;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.frequencia-value {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.frequencia-alta {
+  color: #38a169;
+}
+
+.frequencia-media {
+  color: #ecc94b;
+}
+
+.frequencia-baixa {
+  color: #e53e3e;
+}
+
+.frequencia-arrow {
+  font-size: 16px;
+  color: #717171;
+  text-align: center;
+}
+
+.frequencia-absence-details {
+  max-height: 0;
+  overflow: hidden;
+  border-top: 1px solid #717171;
+}
+
+.frequencia-absence-details.show {
+  max-height: 300px;
+}
+
+.frequencia-details-content {
+  padding: 14px 20px 14px 60px;
+}
+
+.frequencia-details-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e53e3e;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.frequencia-absence-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.frequencia-absence-date {
+  background: white;
+  border: 1px solid #fed7d7;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: #e53e3e;
+  font-weight: 500;
+}
+
+
+
+.competencias-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.competencia-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.competencia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f0f9ff;
+}
+
+.competencia-titulo-area {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.competencia-numero {
+    font-weight: 700;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.competencia-descricao {
+    font-size: 14px;
+    color: #76C5F2;
+    font-weight: 500;
+}
+
+.competencia-arrow {
+    font-size: 18px;
+    color: #717171;
+}
+
+
+.competencia-subitens {
+    max-height: 0;
+    overflow: hidden;
+    background: #fafbfc;
+}
+
+.competencia-subitens.show {
+    max-height: 2000px;
+}
+
+.subitem-container {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.subitem-container:last-child {
+    border-bottom: none;
+}
+
+.subitem-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 20px;
+}
+
+
+.subitem-id {
+    font-weight: 700;
+    font-size: 14px;
+    color: #76C5F2;
+    min-width: 45px;
+    background: #e6f7ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.subitem-texto {
+    flex: 1;
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+.subitem-arrow {
+    font-size: 12px;
+    color: #717171;
+}
+
+
+.subitem-avaliacao {
+    max-height: 0;
+    overflow: hidden;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+.subitem-avaliacao.show {
+    max-height: 300px;
+}
+
+.avaliacao-content {
+    padding: 16px 20px 16px 77px;
+}
+
+.avaliacao-opcoes {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.avaliacao-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.avaliacao-label input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #76C5F2;
+}
+
+.avaliacao-obs {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
 
 
 
