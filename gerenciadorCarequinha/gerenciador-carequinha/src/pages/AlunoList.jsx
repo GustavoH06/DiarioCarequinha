@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
+import { useAlunos } from '../hooks/useAlunos';
+import AlunosListComp from '../blueprints/AlunosListComp';
+
 
 function AlunoList() {
-    const [filtros, setFiltros] = useState({
+    /*const [filtros, setFiltros] = useState({
         nome: '',
         turno: '',
         id: '',
         sala: ''
-    });
-
-    const [alunos] = useState([
+    });*/
+    
+    const { alunos, deleteAluno } = useAlunos();
+    
+    /*const [alunos] = useState([
         { id: 1, nome: "João Pedro Silva", sala: "Berçario 1", sexo: "Masculino", idade: 6, turno: "Manhã" },
         { id: 2, nome: "Maria Eduarda Santos", sala: "Berçario 2", sexo: "Feminino", idade: 5, turno: "Tarde" },
         { id: 3, nome: "Lucas Gabriel Oliveira", sala: "Maternal 1", sexo: "Masculino", idade: 4, turno: "Manhã" },
@@ -17,9 +22,9 @@ function AlunoList() {
         { id: 6, nome: "Beatriz Cristina Rocha", sala: "Jardim 2", sexo: "Feminino", idade: 5, turno: "Tarde" },
         { id: 7, nome: "Rafael Almeida Santos", sala: "Primeiro Período", sexo: "Masculino", idade: 7, turno: "Manhã" },
         { id: 8, nome: "Camila Fernandes Lima", sala: "Segundo Período", sexo: "Feminino", idade: 8, turno: "Tarde" },
-    ]);
+    ]);*/
 
-    const handleFilterChange = (e) => {
+    /*const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFiltros(prev => ({ ...prev, [name]: value }));
     };
@@ -39,7 +44,7 @@ function AlunoList() {
         const matchId = filtros.id === '' || aluno.id.toString().includes(filtros.id);
         const matchSala = aluno.sala.toLowerCase().includes(filtros.sala.toLowerCase());
         return matchNome && matchTurno && matchId && matchSala;
-    });
+    });*/
 
     return (
         <div className="aluno-list-container">
@@ -48,15 +53,15 @@ function AlunoList() {
             <div className="aluno-stats-top">
                 <div className="stats-card-top">
                     <span className="stats-label-top">Total de Alunos</span>
-                    <span className="stats-value-top">{alunosFiltrados.length}</span>
+                   {/* <span className="stats-value-top">{alunosFiltrados.length}</span>*/}
                 </div>
                 <div className="stats-card-top">
                     <span className="stats-label-top">Masculino</span>
-                    <span className="stats-value-top">{alunosFiltrados.filter(a => a.sexo === 'Masculino').length}</span>
+                    {/*<span className="stats-value-top">{alunosFiltrados.filter(a => a.sexo === 'Masculino').length}</span>*/}
                 </div>
                 <div className="stats-card-top">
                     <span className="stats-label-top">Feminino</span>
-                    <span className="stats-value-top">{alunosFiltrados.filter(a => a.sexo === 'Feminino').length}</span>
+                    {/*<span className="stats-value-top">{alunosFiltrados.filter(a => a.sexo === 'Feminino').length}</span>*/}
                 </div>
             </div>
 
@@ -65,34 +70,26 @@ function AlunoList() {
                     <input 
                         type="text" 
                         name="nome" 
-                        placeholder="Nome do Aluno" 
-                        value={filtros.nome}
-                        onChange={handleFilterChange}
+                        placeholder="Nome do Aluno"
                     />
                     <input 
                         type="text" 
                         name="turno" 
-                        placeholder="Turno" 
-                        value={filtros.turno}
-                        onChange={handleFilterChange}
+                        placeholder="Turno"
                     />
                     <input 
                         type="text" 
                         name="id" 
-                        placeholder="ID" 
-                        value={filtros.id}
-                        onChange={handleFilterChange}
+                        placeholder="ID"
                     />
                     <input 
                         type="text" 
                         name="sala" 
-                        placeholder="Sala" 
-                        value={filtros.sala}
-                        onChange={handleFilterChange}
+                        placeholder="Sala"
                     />
                 </div>
                 <div className="filter-buttons">
-                    <i className="bi bi-trash" onClick={limparFiltros} title="Limpar Filtros"></i>
+                    {/*<i className="bi bi-trash" onClick={limparFiltros} title="Limpar Filtros"></i>*/}
                     <i className="bi bi-search" title="Buscar"></i>
                 </div>
             </div>
@@ -108,7 +105,7 @@ function AlunoList() {
                     <label className="col-acoes-aluno">Ações</label>
                 </div>
 
-                {alunosFiltrados.length > 0 ? (
+                {/*{alunosFiltrados.length > 0 ? (
                     alunosFiltrados.map((aluno) => (
                         <div key={aluno.id} className="item-list content">
                             <label className="col-id-aluno">{aluno.id}</label>
@@ -136,7 +133,8 @@ function AlunoList() {
                     <div className="item-list empty">
                         <label>Nenhum aluno encontrado</label>
                     </div>
-                )}
+                )}*/}
+                <AlunosListComp alunos={alunos} onDelete={deleteAluno} />
             </div>
         </div>
     );

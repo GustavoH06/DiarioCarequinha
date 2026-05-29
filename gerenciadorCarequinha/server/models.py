@@ -31,8 +31,31 @@ class Alunos(db.Model):
             'sexo': self.sexo,
 
         }
+    
     def __repr__(self):
         return f'<Aluno {self.nome}, Sala {self.sala}>'
+    
+class Salas(db.Model):
+    __tablename__ = 'salas'
+
+    pid             = db.Column(db.Integer, primary_key=True)
+    nome            = db.Column(db.Text, nullable = False)
+    tipo_sala        = db.Column(db.Text)
+    turno           = db.Column(db.Text)
+    horario_inicio   = db.Column(db.Text)
+    horario_termino  = db.Column(db.Text)
+    alunos          = db.Column(db.Text)
+
+    def to_dict(self):
+        return{
+            'pid': self.pid,
+            'nome': self.nome,
+            'tipoSala': self.tipo_sala,
+            'turno': self.turno,
+            'horarioInicio': self.horario_inicio,
+            'horarioTermino': self.horario_termino,
+            'alunos': self.alunos,
+        }
 
 
     
