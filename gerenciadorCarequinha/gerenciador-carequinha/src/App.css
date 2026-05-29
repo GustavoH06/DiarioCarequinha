@@ -1152,3 +1152,680 @@ h2 {
         grid-area: auto !important;
     }
 }
+
+select,
+.form-input select {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #717171;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+select:focus,
+.form-input select:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+/* ============================================
+   ESTILOS PARA BOTÕES DOS FORMS
+   ============================================ */
+.form-body button {
+    background: linear-gradient(135deg, #84CEF9 0%, #76C5F2 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-body button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(132, 206, 249, 0.3);
+}
+
+.form-body button:active {
+    transform: translateY(0);
+}
+
+.form-body button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================
+   ESTILOS PARA SEARCH DROPDOWN (SalaForm)
+   ============================================ */
+.alunosSearch {
+    position: relative;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-dropdown li {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #4a5568;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.search-dropdown li:hover {
+    background-color: #f0f9ff;
+    color: #76C5F2;
+}
+
+.search-dropdown li:last-child {
+    border-bottom: none;
+}
+
+/* Alunos Chips (selecionados) */
+.alunos-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.aluno-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #84CEF9;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #2d3748;
+}
+
+.aluno-chip button {
+    background: none;
+    border: none;
+    color: #e53e3e;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 4px;
+    margin: 0;
+    width: auto;
+    box-shadow: none;
+    transition: all 0.2s;
+}
+
+.aluno-chip button:hover {
+    transform: scale(1.2);
+    background: none;
+    box-shadow: none;
+}
+
+/* ============================================
+   CORREÇÃO DA LISTA - DISTRIBUIÇÃO PROPORCIONAL
+   ============================================ */
+/* Garantir que as listas ocupem toda a largura */
+.sala-list-container .list-items,
+.aluno-list-container .list-items {
+    width: 100%;
+}
+
+.sala-list-container .item-list,
+.aluno-list-container .item-list {
+    width: 100%;
+}
+
+/* Garantir que os labels dentro dos itens respeitem o flex */
+.item-list label {
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+}
+
+/* Ajuste para as ações */
+.col-acoes-sala,
+.col-acoes-aluno {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* ============================================
+   ESTILOS PARA MENSAGENS DE ERRO/SUCESSO
+   ============================================ */
+.error-message {
+    background-color: #fed7d7;
+    color: #c53030;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #feb2b2;
+}
+
+.success-message {
+    background-color: #c6f6d5;
+    color: #276749;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #9ae6b4;
+}
+
+.list-items {
+    width: 100%;
+}
+
+/* Estilização dos botões de remover */
+.list-items button {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Roboto', sans-serif;
+    width: auto;
+    min-width: 80px;
+}
+
+.list-items button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+}
+
+/* Mensagem de lista vazia */
+.list-items > p {
+    text-align: center !important;
+    color: #a0aec0 !important;
+    padding: 40px 20px !important;
+    background: #FDFDFD;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px !important;
+    margin: 0 !important;
+}
+
+/* ============================================
+   ESTILIZAÇÃO DOS SELECTS E INPUTS ESPECIAIS
+   ============================================ */
+
+.form-input select,
+.form-input input[type="date"],
+.form-input input[type="time"],
+.form-input input[type="number"] {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #717171;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    background-color: white;
+    width: 100%;
+    cursor: pointer;
+}
+
+.form-input select:focus,
+.form-input input:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+/* ============================================
+   ESTILIZAÇÃO DO DROPDOWN DE PESQUISA (SalaForm)
+   ============================================ */
+
+/* Container do campo de pesquisa */
+.alunosSearch {
+    position: relative;
+}
+
+/* Dropdown de resultados */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Cada item do dropdown */
+.search-dropdown li {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #4a5568;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.search-dropdown li:hover {
+    background-color: #f0f9ff;
+    color: #76C5F2;
+}
+
+/* Estilo para o nome do aluno no dropdown */
+.search-dropdown li strong {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* Estilo para a sala do aluno no dropdown */
+.search-dropdown li span {
+    font-size: 12px;
+    color: #718096;
+    background: #edf2f7;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* ============================================
+   ESTILIZAÇÃO DOS CHIPS DE ALUNOS SELECIONADOS
+   ============================================ */
+
+/* Container dos chips */
+.alunos-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Cada chip */
+.aluno-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #84CEF9;
+    border-radius: 20px;
+    padding: 6px 12px 6px 16px;
+    font-size: 13px;
+    color: #2d3748;
+}
+
+/* Botão de remover do chip */
+.aluno-chip button {
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    cursor: pointer;
+    font-size: 18px !important;
+    font-weight: bold;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: auto !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.aluno-chip button:hover {
+    transform: scale(1.2) !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* ============================================
+   ESTILIZAÇÃO DO BOTÃO DOS FORMS
+   ============================================ */
+
+.form-body > button {
+    background: linear-gradient(135deg, #84CEF9 0%, #76C5F2 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+}
+
+.form-body > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(132, 206, 249, 0.3);
+}
+
+.form-body > button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================
+   AJUSTES RESPONSIVOS PARA OS NOVOS ELEMENTOS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .search-dropdown li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .aluno-chip {
+        font-size: 11px;
+        padding: 4px 10px 4px 12px;
+    }
+    
+    .list-items button {
+        padding: 4px 10px;
+        font-size: 11px;
+        min-width: 60px;
+    }
+}
+
+.list-items {
+    width: 100%;
+}
+
+.item-list {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+}
+
+.item-list.header {
+    background: linear-gradient(135deg, #84CEF9 0%, #76C5F2 100%);
+    border-radius: 10px;
+    padding: 14px 20px;
+}
+
+.item-list.header label {
+    font-weight: 600;
+    color: white;
+}
+
+.item-list.content {
+    background-color: #FDFDFD;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 20px;
+}
+
+.item-list.content:hover {
+    background-color: #f7fafc;
+    border-color: #84CEF9;
+}
+
+.item-list.empty {
+    background-color: #FDFDFD;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 40px 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.item-list.empty label {
+    color: #a0aec0;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Colunas Aluno */
+.col-id-aluno { flex: 0.5; text-align: left; }
+.col-nome-aluno { flex: 2; text-align: left; }
+.col-sala-aluno { flex: 1.2; text-align: left; }
+.col-sexo-aluno { flex: 0.6; text-align: left; }
+.col-idade-aluno { flex: 0.6; text-align: left; }
+.col-acao-aluno { flex: 0.8; text-align: left; }
+
+/* Colunas Sala */
+.col-id-sala { flex: 0.5; text-align: left; }
+.col-nome-sala { flex: 1.5; text-align: left; }
+.col-tipo-sala { flex: 0.8; text-align: left; }
+.col-turno-sala { flex: 0.7; text-align: left; }
+.col-horario-sala { flex: 1; text-align: left; }
+.col-alunos-sala { flex: 0.6; text-align: left; }
+.col-acao-sala { flex: 0.7; text-align: left; }
+
+/* Botão Delete */
+.delete-btn {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Roboto', sans-serif;
+}
+
+.delete-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+}
+
+/* Badges */
+.sexo-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.sexo-m {
+    background-color: #c6e9ff;
+    color: #2b6cb0;
+}
+
+.sexo-f {
+    background-color: #fed7e2;
+    color: #c53030;
+}
+
+.turno-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    background: white;
+    border: 1.5px solid #84CEF9;
+}
+
+.turno-manha {
+    border-color: #84CEF9;
+    color: #276749;
+}
+
+.turno-tarde {
+    border-color: #84CEF9;
+    color: #9c4221;
+}
+
+.tipo-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    background: white;
+    border: 1.5px solid #84CEF9;
+}
+
+.tipo-bercario { border-color: #84CEF9; color: #2b6cb0; }
+.tipo-maternal { border-color: #84CEF9; color: #276749; }
+.tipo-jardim { border-color: #84CEF9; color: #9c4221; }
+.tipo-primario { border-color: #84CEF9; color: #553c9a; }
+
+.alunos-count {
+    font-weight: 700;
+    font-size: 15px;
+    color: #2d3748;
+    background: #e6f7ff;
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 50px;
+}
+
+/* Search Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.search-dropdown li {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #4a5568;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-dropdown li:hover {
+    background-color: #f0f9ff;
+}
+
+.search-dropdown li strong {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.aluno-sala-badge {
+    font-size: 11px;
+    color: #718096;
+    background: #edf2f7;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* Alunos Chips */
+.alunos-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.aluno-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #84CEF9;
+    border-radius: 20px;
+    padding: 6px 12px 6px 16px;
+    font-size: 13px;
+    color: #2d3748;
+}
+
+.aluno-chip button {
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    cursor: pointer;
+    font-size: 18px !important;
+    font-weight: bold;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    width: auto !important;
+}
+
+.aluno-chip button:hover {
+    transform: scale(1.2);
+}
+
+/* Loading e Error */
+.loading-message, .error-message {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 12px;
+}
+
+.error-message {
+    color: #c53030;
+    background: #fed7d7;
+}

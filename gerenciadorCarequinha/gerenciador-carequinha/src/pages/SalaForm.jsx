@@ -117,7 +117,7 @@ export default function SalaForm() {
 
         <h2>Alunos</h2>
 
-        <div className="form-input alunosSearch" style={{ position: 'relative' }}>
+        <div className="form-input alunosSearch">
           <label>Pesquisar aluno pelo nome</label>
           <input
             type="text"
@@ -131,7 +131,8 @@ export default function SalaForm() {
             <ul className="search-dropdown">
               {searchResults.map(a => (
                 <li key={a.pid} onClick={() => selectAluno(a)}>
-                  {a.nome}
+                  <strong>{a.nome}</strong>
+                  {a.sala && <span className="aluno-sala-badge">{a.sala}</span>}
                 </li>
               ))}
             </ul>
