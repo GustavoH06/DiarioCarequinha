@@ -1,42 +1,95 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-  const AlunoForm = () => {
-    const [formData, setFormData] = useState({
-    nome: '',
-    idade: '',
-    dataNascimento: '',
-    telefone: '',
-    sexo: '',
-    nomePai: '',
-    nomeMae: '',
-    endereco: '',
-    numero: '',
-    sala: ''
-  });
+const API = 'http://localhost:5000/api/alunos';
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === 'radio') {
-      if (checked) {
-        setFormData(prev => ({ ...prev, [name]: value }));
-      }
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+const emptyForm = {
+  nome: '',
+  dataNascimento: '',
+  telefone: '',
+  nomePai: '',
+  nomeMae: '',
+  endereco: '',
+  numero: '',
+  sala: '',
+  idade: '',
+  sexo: '',
+};
+
+export default function AlunoForm() {
+  const [formData, setFormData] = useState(emptyForm);
+  const [alunos, setAlunos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchAlunos();
+  }, []);
+
+  async function fetchAlunos() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) throw new Error('Erro ao buscar alunos');
+      const data = await res.json();
+      setAlunos(data);
+    } catch (err) {
+      setError(err.message);
     }
-  };
+  }
 
-  const handleSubmit = (e) => {
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log('Dados do Aluno:', formData);
-    alert('Aluno cadastrado com sucesso!');
-  };
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload = {
+        ...formData,
+        idade: formData.idade ? parseInt(formData.idade) : null,
+      };
+
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Erro ao cadastrar aluno');
+
+      const novoAluno = await res.json();
+      setAlunos(prev => [...prev, novoAluno]);
+      setFormData(emptyForm);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDelete(pid) {
+    try {
+      const res = await fetch(`${API}/${pid}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erro ao remover aluno');
+      setAlunos(prev => prev.filter(a => a.pid !== pid));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   return (
     <div className="form-container">
       <h1>Cadastrar Aluno</h1>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <div className="form-body">
         <h2>Dados do Aluno</h2>
         <div className="form-grid">
+
           <div className="form-input nome">
             <label>Nome</label>
             <input
@@ -52,13 +105,34 @@ import React, { useState } from 'react';
           <div className="form-input data">
             <label>Data de Nascimento</label>
             <input
-              type="text"
+              type="date"
               name="dataNascimento"
-              placeholder="Ex: 03/12/2026"
               value={formData.dataNascimento}
               onChange={handleChange}
               required
             />
+          </div>
+
+          <div className="form-input idade">
+            <label>Idade</label>
+            <input
+              type="number"
+              name="idade"
+              placeholder="Ex: 5"
+              value={formData.idade}
+              onChange={handleChange}
+              min="0"
+              max="18"
+            />
+          </div>
+
+          <div className="form-input sexo">
+            <label>Sexo</label>
+            <select name="sexo" value={formData.sexo} onChange={handleChange}>
+              <option value="">Selecione...</option>
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
           </div>
 
           <div className="form-input tel">
@@ -69,7 +143,17 @@ import React, { useState } from 'react';
               placeholder="Ex: (34)99765-1344"
               value={formData.telefone}
               onChange={handleChange}
-              required
+            />
+          </div>
+
+          <div className="form-input sala">
+            <label>Sala</label>
+            <input
+              type="text"
+              name="sala"
+              placeholder="Ex: Maternal 2"
+              value={formData.sala}
+              onChange={handleChange}
             />
           </div>
 
@@ -78,18 +162,16 @@ import React, { useState } from 'react';
             <input
               type="text"
               name="nomePai"
-              placeholder="Ex: Arthur Arantes Almêida"
+              placeholder="Nome do pai"
               value={formData.nomePai}
               onChange={handleChange}
-              required
             />
             <input
               type="text"
               name="nomeMae"
-              placeholder="Ex: Carmen Cristina Caixeta"
+              placeholder="Nome da mãe"
               value={formData.nomeMae}
               onChange={handleChange}
-              required
               style={{ marginTop: '8px' }}
             />
           </div>
@@ -102,43 +184,6 @@ import React, { useState } from 'react';
               placeholder="Ex: Rua do Limão, Bairro do Limoeiro"
               value={formData.endereco}
               onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-input sala">
-            <label>Sala</label>
-            <input
-              type="text"
-              name="sala"
-              placeholder="Ex: Maternal 2"
-              value={formData.sala}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-input idade">
-            <label>Idade</label>
-            <input
-              type="text"
-              name="idade"
-              placeholder="Ex: 05"
-              value={formData.idade}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-input sexo">
-            <label>Sexo</label>
-            <input
-              type="text"
-              name="sexo"
-              placeholder="Ex: Menino"
-              value={formData.sexo}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -150,31 +195,45 @@ import React, { useState } from 'react';
               placeholder="Ex: 365"
               value={formData.numero}
               onChange={handleChange}
-              required
             />
           </div>
-        </div>
-      </div>
-      <br />
-      <div className="list-items">
-                <div className="item-list header">
-                    <label>Id</label>
-                    <label>Nome</label>
-                    <label>Sala</label>
-                    <label>Sexo</label>
-                    <label>Idade</label>
-                </div>
 
-                <div className="item-list content">
-                    <label>1</label>
-                    <label>Kaique Fernandes</label>
-                    <label>Berçario 1</label>
-                    <label>M</label>
-                    <label>6</label>
-                </div>
-            </div>
+        </div>
+
+        <button onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Cadastrando...' : 'Cadastrar Aluno'}
+        </button>
+      </div>
+
+      <br />
+
+      <div className="list-items">
+        <div className="item-list header">
+          <label>ID</label>
+          <label>Nome</label>
+          <label>Sala</label>
+          <label>Sexo</label>
+          <label>Idade</label>
+          <label>Ação</label>
+        </div>
+
+        {alunos.length === 0 && (
+          <p style={{ textAlign: 'center', color: '#888', padding: '1rem' }}>
+            Nenhum aluno cadastrado.
+          </p>
+        )}
+
+        {alunos.map(aluno => (
+          <div className="item-list content" key={aluno.pid}>
+            <label>{aluno.pid}</label>
+            <label>{aluno.nome}</label>
+            <label>{aluno.sala || '—'}</label>
+            <label>{aluno.sexo || '—'}</label>
+            <label>{aluno.idade || '—'}</label>
+            <button onClick={() => handleDelete(aluno.pid)}>Remover</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
-
-export default AlunoForm;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
-import Navbar from './layouts/Navbar'
+import Navbar from './blueprints/Navbar'
 import './App.css'
 import axios from 'axios'
 import { BrowserRouter as Router, Routes, Route } from "react-router";
@@ -19,7 +19,7 @@ function App() {
   const[array, setArray] = useState([]);*/
 
   const fetchAPI = async () =>{
-    const response = await axios.get("http://127.0.0.1:8080/api/users")
+    const response = await axios.get("http://127.0.0.1:5000/api/alunos")
     console.log(response.data.users);
     setArray(response.data.users);
   };
