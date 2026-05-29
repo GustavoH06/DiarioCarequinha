@@ -23,18 +23,9 @@ function Home() {
 
     const { salas, createSala, deleteSala, searchAlunos } = useSalas();
 
-    {/*const [salasList] = useState([
-        { id: 1, periodo: "Berçario 1", turno: "Manhã", alunos: 17 },
-        { id: 2, periodo: "Berçario 2", turno: "Tarde", alunos: 14 },
-        { id: 3, periodo: "Maternal 1", turno: "Manhã", alunos: 15 },
-        { id: 4, periodo: "Maternal 2", turno: "Tarde", alunos: 13 },
-        { id: 5, periodo: "Jardim 1", turno: "Manhã", alunos: 18 },
-    ]);*/}
-
     return (
         <div className="home-container">
             <div className="dashboard-column">
-                {/* Dashboard Cards */}
                 <div className="dashboard">
                     <div className="home-title">
                         <h2>Dashboard</h2>
@@ -61,36 +52,12 @@ function Home() {
                     </div>
                 </div>
 
-                {/* Lista de Salas */}
                 <div className="salas-list">
                     <div className="home-title">
                         <h2>Lista de Salas</h2>
                     </div>
 
                     <SalasListComp salas={salas} onDelete={deleteSala} />
-                    {/*<div className="list-container">
-                        <div className="item-list header">
-                            <label className="col-id-home">ID</label>
-                            <label className="col-periodo-home">Período</label>
-                            <label className="col-turno-home">Turno</label>
-                            <label className="col-alunos-home">Alunos</label>
-                        </div>
-
-                        {salasList.map((sala) => (
-                            <div key={sala.id} className="item-list content">
-                                <label className="col-id-home">{sala.id}</label>
-                                <label className="col-periodo-home">{sala.periodo}</label>
-                                <label className="col-turno-home">
-                                    <span className={`turno-badge ${sala.turno === 'Manhã' ? 'turno-manha' : 'turno-tarde'}`}>
-                                        {sala.turno}
-                                    </span>
-                                </label>
-                                <label className="col-alunos-home">
-                                    <span className="alunos-count">{sala.alunos}</span>
-                                </label>
-                            </div>
-                        ))}
-                    </div>*/}
                 </div>
             </div>
 

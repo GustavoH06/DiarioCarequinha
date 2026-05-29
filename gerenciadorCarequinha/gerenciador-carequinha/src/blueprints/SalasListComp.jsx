@@ -50,7 +50,6 @@ export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp
             <span className="alunos-count">{sala.totalAlunos || 0}</span>
           </label>
           <label className="col-acoes-sala">
-            <i className="bi bi-eye acao-icon" title="Visualizar"></i>
             <i className="bi bi-pencil acao-icon" title="Editar"></i>
             <i className="bi bi-trash acao-icon" title="Excluir" onClick={() => onDelete(sala.sid)}></i>
           </label>

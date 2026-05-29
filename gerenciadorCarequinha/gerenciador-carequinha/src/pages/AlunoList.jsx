@@ -16,10 +16,7 @@ function AlunoList() {
                     <span className="stats-label-top">Total de Alunos</span>
                 </div>
                 <div className="stats-card-top">
-                    <span className="stats-label-top">Masculino</span>
-                </div>
-                <div className="stats-card-top">
-                    <span className="stats-label-top">Feminino</span>
+                    <span className="stats-label-top">Cadastrar Aluno</span>
                 </div>
             </div>
 

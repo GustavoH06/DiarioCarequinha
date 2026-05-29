@@ -36,8 +36,8 @@ def register_routes(app, db):
             return jsonify(aluno.to_dict()), 200
         
         elif request.method == 'DELETE':
-            db.sesion.delete(aluno)
-            db.sesion.commit()
+            db.session.delete(aluno)
+            db.session.commit()
             return jsonify({'message': f'Aluno {pid} removido'}), 200
 
     

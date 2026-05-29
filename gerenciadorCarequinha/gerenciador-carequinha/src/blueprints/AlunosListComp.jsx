@@ -38,7 +38,6 @@ export default function AlunosListComp({ alunos: alunosProp, onDelete: onDeleteP
           </label>
           <label className="col-idade-aluno">{aluno.idade || '—'}</label>
           <label className="col-acoes-aluno">
-            <i className="bi bi-eye acao-icon" title="Visualizar"></i>
             <i className="bi bi-pencil acao-icon" title="Editar"></i>
             <i className="bi bi-trash acao-icon" title="Excluir" onClick={() => onDelete(aluno.pid)}></i>
           </label>
