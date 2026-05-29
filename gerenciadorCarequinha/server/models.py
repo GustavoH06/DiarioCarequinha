@@ -1,5 +1,12 @@
 from app import db
 
+sala_alunos = db.Table(
+    'sala_alunos',
+    db.Column('sala_id',  db.Integer, db.ForeignKey('salas.sid'),   primary_key=True),
+    db.Column('aluno_id', db.Integer, db.ForeignKey('alunos.pid'),  primary_key=True),
+)
+
+
 class Alunos(db.Model):
 
     __tablename__ = 'alunos'
@@ -34,28 +41,31 @@ class Alunos(db.Model):
     
     def __repr__(self):
         return f'<Aluno {self.nome}, Sala {self.sala}>'
-    
+
 class Salas(db.Model):
     __tablename__ = 'salas'
-
-    pid             = db.Column(db.Integer, primary_key=True)
-    nome            = db.Column(db.Text, nullable = False)
-    tipo_sala        = db.Column(db.Text)
-    turno           = db.Column(db.Text)
-    horario_inicio   = db.Column(db.Text)
-    horario_termino  = db.Column(db.Text)
-    alunos          = db.Column(db.Text)
-
+ 
+    sid             = db.Column(db.Integer, primary_key=True)
+    nome            = db.Column(db.Text, nullable=False)
+    tipo            = db.Column(db.Text, nullable=False)   # Berçario, Maternal, Jardim, Primário
+    turno           = db.Column(db.Text, nullable=False)   # Manhã, Tarde
+    horario_inicio  = db.Column(db.Text)
+    horario_termino = db.Column(db.Text)
+ 
+    # Relação many-to-many com Alunos
+    alunos = db.relationship('Alunos', secondary=sala_alunos, backref='salas')
+ 
     def to_dict(self):
-        return{
-            'pid': self.pid,
-            'nome': self.nome,
-            'tipoSala': self.tipo_sala,
-            'turno': self.turno,
-            'horarioInicio': self.horario_inicio,
+        return {
+            'sid':            self.sid,
+            'nome':           self.nome,
+            'tipo':           self.tipo,
+            'turno':          self.turno,
+            'horarioInicio':  self.horario_inicio,
             'horarioTermino': self.horario_termino,
-            'alunos': self.alunos,
+            'alunos':         [{'pid': a.pid, 'nome': a.nome} for a in self.alunos],
+            'totalAlunos':    len(self.alunos),
         }
-
-
-    
+ 
+    def __repr__(self):
+        return f'<Sala {self.nome}, {self.tipo}, {self.turno}>'

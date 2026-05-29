@@ -1,5 +1,7 @@
 import classNames from "classnames";
 import { useState } from "react";
+import SalasListComp from "../blueprints/SalasListComp";
+import { useSalas } from "../hooks/useSalas";
 
 function Home() {
     const [dashBlocks] = useState([
@@ -19,13 +21,15 @@ function Home() {
         }
     ]);
 
-    const [salasList] = useState([
+    const { salas, createSala, deleteSala, searchAlunos } = useSalas();
+
+    {/*const [salasList] = useState([
         { id: 1, periodo: "Berçario 1", turno: "Manhã", alunos: 17 },
         { id: 2, periodo: "Berçario 2", turno: "Tarde", alunos: 14 },
         { id: 3, periodo: "Maternal 1", turno: "Manhã", alunos: 15 },
         { id: 4, periodo: "Maternal 2", turno: "Tarde", alunos: 13 },
         { id: 5, periodo: "Jardim 1", turno: "Manhã", alunos: 18 },
-    ]);
+    ]);*/}
 
     return (
         <div className="home-container">
@@ -62,7 +66,9 @@ function Home() {
                     <div className="home-title">
                         <h2>Lista de Salas</h2>
                     </div>
-                    <div className="list-container">
+
+                    <SalasListComp salas={salas} onDelete={deleteSala} />
+                    {/*<div className="list-container">
                         <div className="item-list header">
                             <label className="col-id-home">ID</label>
                             <label className="col-periodo-home">Período</label>
@@ -84,11 +90,10 @@ function Home() {
                                 </label>
                             </div>
                         ))}
-                    </div>
+                    </div>*/}
                 </div>
             </div>
 
-            {/* Coluna de Notas/Informações */}
             <div className="notes-column">
                 <div className="notes-header-section">
                     <h3>Informações do Professor</h3>
