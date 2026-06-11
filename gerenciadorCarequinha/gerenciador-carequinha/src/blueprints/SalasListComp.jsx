@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import { useSalas } from '../hooks/useSalas';
 
-export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp }) {
+export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp, onSelect }) {
   const hook = useSalas();
   const navigate = useNavigate();
 
@@ -10,6 +10,12 @@ export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp
 
   if (hook.loading && !salasProp) return <div className="loading-message">Carregando salas...</div>;
   if (hook.error   && !salasProp) return <div className="error-message">{hook.error}</div>;
+
+  function handleRowClick(sala) {
+    if (onSelect) {
+      onSelect(sala);
+    }
+  }
 
   return (
     <div className="list-items">
@@ -30,10 +36,11 @@ export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp
       )}
 
       {salas.map(sala => (
-        <div className="item-list content" 
+        <div 
+          className="item-list content" 
           key={sala.sid}
-          onClick={() => navigate(`/salas/${sala.sid}`)}
-          style={{cursor: 'pointer'}}
+          onClick={() => handleRowClick(sala)}
+          style={{ cursor: 'pointer' }}
         >
           <label className="col-id-sala">{sala.sid}</label>
           <label className="col-nome-sala">{sala.nome}</label>
@@ -55,7 +62,7 @@ export default function SalasListComp({ salas: salasProp, onDelete: onDeleteProp
             <span className="alunos-count">{sala.totalAlunos || 0}</span>
           </label>
           <label className="col-acoes-sala" onClick={e => e.stopPropagation()}>
-            <i className="bi bi-pencil acao-icon" title="Visualizar" onClick={() => navigate(`/salas/${sala.sid}`)}></i>
+            <i className="bi bi-pencil acao-icon" title="Editar" onClick={() => navigate(`/salas/${sala.sid}`)}></i>
             <i className="bi bi-trash acao-icon" title="Excluir" onClick={() => onDelete(sala.sid)}></i>
           </label>
         </div>

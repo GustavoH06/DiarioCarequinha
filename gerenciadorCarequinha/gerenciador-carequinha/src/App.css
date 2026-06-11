@@ -345,12 +345,10 @@ h2 {
     color: #4a5568;
 }
 
-/* ============================================
-   SALA LIST E ALUNO LIST (Páginas de Lista)
-   ============================================ */
 .sala-list-container,
 .aluno-list-container {
     padding: 0;
+    gap: 10px;
 }
 
 .sala-list-container h1,
@@ -1828,4 +1826,53 @@ select:focus,
 .error-message {
     color: #c53030;
     background: #fed7d7;
+}
+
+.empty-info-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #a0aec0;
+}
+
+.empty-info-message i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.empty-info-message p {
+    font-size: 14px;
+    margin: 0;
+}
+
+.loading-message-small {
+    text-align: center;
+    padding: 40px 20px;
+    color: #718096;
+    font-size: 14px;
+}
+
+.alunos-info-section {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.alunos-info-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+.aluno-info-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.aluno-info-item:last-child {
+    border-bottom: none;
+}
+
+.aluno-info-nome {
+    font-size: 13px;
+    color: #4a5568;
 }

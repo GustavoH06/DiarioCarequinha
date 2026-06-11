@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSalas } from '../hooks/useSalas';
 import SalasListComp from '../blueprints/SalasListComp';
+import { useNavigate } from 'react-router';
 
 function SalaList() {
     const [filtros, setFiltros] = useState({
@@ -11,6 +12,10 @@ function SalaList() {
     });
 
     const { salas, createSala, deleteSala, searchAlunos } = useSalas();
+
+    const navigate = useNavigate();
+
+    const totalSalas = salas?.length || 0;
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -44,10 +49,6 @@ function SalaList() {
                 <div className="stats-card-top">
                     <span className="stats-label-top">Total de Salas</span>
                     <span className="stats-value-top">{salasFiltradas.length}</span>
-                </div>
-                <div className="stats-card-top">
-                    <span className="stats-label-top">Total de Alunos</span>
-                    <span className="stats-value-top">{totalAlunos}</span>
                 </div>
             </div>
 
@@ -88,8 +89,15 @@ function SalaList() {
                 </div>
             </div>
 
-            <div className="list-items">
+            <div 
+                className="stats-card-top" 
+                onClick={() => navigate("/sala-form/")}
+                style={{cursor: 'pointer', marginBottom: '20px', justifyContent: 'center', background: 'green'}}
+            >
+                <span className="stats-label-top" >Cadastrar Sala</span>
+            </div>
 
+            <div className="list-items">
                 <SalasListComp salas={salas} onDelete={deleteSala} />
             </div>
         </div>
