@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router';
 import { useAlunos } from '../hooks/useAlunos';
 
 export default function AlunosListComp({ alunos: alunosProp, onDelete: onDeleteProp }) {
   const hook = useAlunos();
+  const navigate = useNavigate();
 
   const alunos   = alunosProp  ?? hook.alunos;
   const onDelete = onDeleteProp ?? hook.deleteAluno;
@@ -27,19 +29,24 @@ export default function AlunosListComp({ alunos: alunosProp, onDelete: onDeleteP
       )}
 
       {alunos.map(aluno => (
-        <div className="item-list content" key={aluno.pid}>
+        <div 
+          className="item-list content" 
+          key={aluno.pid}
+          onClick={() => navigate(`/alunos/${aluno.pid}`)}
+          style={{ cursor: 'pointer' }}
+        >
           <label className="col-id-aluno">{aluno.pid}</label>
           <label className="col-nome-aluno">{aluno.nome}</label>
-          <label className="col-sala-aluno">{aluno.sala  || '—'}</label>
+          <label className="col-sala-aluno">{aluno.salas?.length > 0 ? aluno.salas.map(s => s.nome).join(', '): '—'}</label>
           <label className="col-sexo-aluno">
             <span className={`sexo-badge ${aluno.sexo === 'M' ? 'sexo-m' : aluno.sexo === 'F' ? 'sexo-f' : ''}`}>
-              {aluno.sexo === 'M' ? 'M' : aluno.sexo === 'F' ? 'F' : aluno.sexo || '—'}
+              {aluno.sexo || '—'}
             </span>
           </label>
           <label className="col-idade-aluno">{aluno.idade || '—'}</label>
-          <label className="col-acoes-aluno">
-            <i className="bi bi-pencil acao-icon" title="Editar"></i>
-            <i className="bi bi-trash acao-icon" title="Excluir" onClick={() => onDelete(aluno.pid)}></i>
+          <label className="col-acoes-aluno" onClick={e => e.stopPropagation()}>
+            <i className="bi bi-pencil acao-icon" title="Visualizar" onClick={() => navigate(`/alunos/${aluno.pid}`)}/>
+            <i className="bi bi-trash acao-icon" title="Excluir" onClick={() => onDelete(aluno.pid)}/>
           </label>
         </div>
       ))}

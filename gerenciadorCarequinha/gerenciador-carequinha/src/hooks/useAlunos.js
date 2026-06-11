@@ -7,9 +7,7 @@ export function useAlunos() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchAlunos();
-  }, []);
+  useEffect(() => { fetchAlunos(); }, []);
 
   async function fetchAlunos() {
     setLoading(true);
@@ -37,11 +35,33 @@ export function useAlunos() {
     return novoAluno;
   }
 
+  async function updateAluno(pid, payload){
+    const res = await fetch(`${API}/${pid}`,{
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if(!res.ok)throw new Error('Erro ao atualizar aluno');
+    const atualizaAluno = await res.json();
+    setAlunos(prev => prev.map(a =>a.pid === pid ? atualizaAluno : a));
+    return atualizaAluno;
+  }
+
   async function deleteAluno(pid) {
     const res = await fetch(`${API}/${pid}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Erro ao remover aluno');
     setAlunos(prev => prev.filter(a => a.pid !== pid));
   }
 
-  return { alunos, loading, error, createAluno, deleteAluno };
+  async function saveCompetencia(pid, itemId, nota, observacao){
+    const res = await fetch(`${API}/${pid}/competencias`,{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ itemId, nota, observacao }),
+    });
+    if(!res.ok) throw new Error("Erro ao salvar competências");
+    return res.json();
+  }
+
+  return { alunos, loading, error, createAluno, updateAluno, deleteAluno, saveCompetencia };
 }

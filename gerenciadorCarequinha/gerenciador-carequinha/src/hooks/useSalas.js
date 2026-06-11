@@ -13,6 +13,7 @@ export function useSalas() {
   async function fetchSalas() {
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetch(API);
       if (!res.ok) throw new Error('Erro ao carregar salas');
@@ -34,6 +35,18 @@ export function useSalas() {
     const novaSala = await res.json();
     setSalas(prev => [...prev, novaSala]);
     return novaSala;
+  }
+
+  async function updateSala(sid, payload) {
+    const res = await fetch(`${API}/${sid}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar sala');
+    const salaAtualizada = await res.json();
+    setSalas(prev => prev.map(s => s.sid === sid ? salaAtualizada : s));
+    return salaAtualizada;
   }
 
   async function deleteSala(sid) {
@@ -71,5 +84,6 @@ export function useSalas() {
     }
   }
 
-  return { salas, loading, error, createSala, deleteSala, addAlunoToSala, removeAlunoFromSala, searchAlunos };
+  return { salas, loading, error, createSala, updateSala, deleteSala, 
+            addAlunoToSala, removeAlunoFromSala, searchAlunos };
 }

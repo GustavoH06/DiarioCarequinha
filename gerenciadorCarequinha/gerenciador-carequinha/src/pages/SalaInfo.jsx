@@ -1,232 +1,212 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
 
-const SalaInfo = () => {
-    const [formData, setFormData] = useState({
-        nomeSala: '',
-        tipoSala: '',
-        turnoSala: '',
-        horarioInicio: '',
-        horarioTermino: '',
-        alunos: ''
-    });
+const API        = 'http://localhost:5000/api/salas';
+const API_ALUNOS = 'http://localhost:5000/api/alunos';
 
-    const [alunos, setAlunos] = useState([
-        {
-        id: 1,
-        nome: "João Pedro Silva",
-        totalAulas: 40,
-        faltas: 3,
-        diasFalta: ["03/03/2026", "10/03/2026", "17/03/2026"]
-        },
-        {
-        id: 2,
-        nome: "Maria Eduarda Santos",
-        totalAulas: 40,
-        faltas: 8,
-        diasFalta: ["05/02/2026", "12/02/2026", "19/02/2026", "26/02/2026", "05/03/2026", "12/03/2026", "19/03/2026", "26/03/2026"]
-        },
-        {
-        id: 3,
-        nome: "Lucas Gabriel Oliveira",
-        totalAulas: 40,
-        faltas: 1,
-        diasFalta: ["15/03/2026"]
-        },
-        {
-        id: 4,
-        nome: "Ana Beatriz Costa",
-        totalAulas: 40,
-        faltas: 12,
-        diasFalta: ["01/02/2026", "08/02/2026", "15/02/2026", "22/02/2026", "01/03/2026", "08/03/2026", "15/03/2026", "22/03/2026", "29/03/2026", "05/04/2026", "12/04/2026", "19/04/2026"]
-        },
-        {
-        id: 5,
-        nome: "Pedro Henrique Lima",
-        totalAulas: 40,
-        faltas: 5,
-        diasFalta: ["07/03/2026", "14/03/2026", "21/03/2026", "28/03/2026", "04/04/2026"]
-        }
-    ]);
+export default function SalaInfo() {
+  const { sid }  = useParams();
+  const navigate = useNavigate();
 
-    const [expandedStudent, setExpandedStudent] = useState(null);
+  const [sala,      setSala]      = useState(null);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState(null);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+  const [editMode,  setEditMode]  = useState(false);
+  const [formData,  setFormData]  = useState({});
+  const [saving,    setSaving]    = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Dados da Sala:', formData);
-        alert('Sala cadastrada com sucesso!');
-    };
+  const [searchQuery,   setSearchQuery]   = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
-    const calcularFrequencia = (totalAulas, faltas) => {
-        const presencas = totalAulas - faltas;
-        const percentual = (presencas / totalAulas) * 100;
-        return percentual.toFixed(1);
-    };
+  useEffect(() => { fetchSala(); }, [sid]);
 
-    const getFrequenciaClass = (percentual) => {
-        if (percentual >= 75) return "frequencia-alta";
-        if (percentual >= 50) return "frequencia-media";
-        return "frequencia-baixa";
-    };
+  async function fetchSala() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/${sid}`);
+      if (!res.ok) throw new Error('Sala não encontrada');
+      const data = await res.json();
+      setSala(data);
+      setFormData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    const toggleDetails = (studentId) => {
-        if (expandedStudent === studentId) {
-        setExpandedStudent(null);
-        } else {
-        setExpandedStudent(studentId);
-        }
-    };
+  async function handleSaveSala() {
+    setSaving(true);
+    try {
+      const res = await fetch(`${API}/${sid}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error('Erro ao salvar');
+      const atualizada = await res.json();
+      setSala(atualizada);
+      setEditMode(false);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
-    return (
-        <div className="info-container">
-        <h1>Cadastrar Sala</h1>
-        <div className="form-body">
-            <h2>Dados da Sala</h2>
-            <div className="form-grid-sala">
-            <div className="form-input nomeSala">
-                <label>Nome Sala</label>
-                <input
-                type="text"
-                name="nomeSala"
-                placeholder="Segundo Período"
-                value={formData.nomeSala}
-                onChange={handleChange}
-                required
-                />
-            </div>
+  async function handleSearch(e) {
+    const q = e.target.value;
+    setSearchQuery(q);
+    if (q.trim().length < 2) { setSearchResults([]); return; }
+    try {
+      const res  = await fetch(API_ALUNOS);
+      const todos = await res.json();
+      const alunosNaSala = sala.alunos.map(a => a.pid);
+      setSearchResults(
+        todos.filter(a =>
+          a.nome.toLowerCase().includes(q.toLowerCase()) &&
+          !alunosNaSala.includes(a.pid)
+        )
+      );
+    } catch { setSearchResults([]); }
+  }
 
-            <div className="form-input tipoSala">
-                <label>Tipo Sala</label>
-                <input
-                type="text"
-                name="tipoSala"
-                placeholder="Primário"
-                value={formData.tipoSala}
-                onChange={handleChange}
-                required
-                />
-            </div>
+  async function addAluno(pid) {
+    try {
+      const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'POST' });
+      if (!res.ok) throw new Error();
+      setSala(await res.json());
+      setSearchQuery('');
+      setSearchResults([]);
+    } catch { alert('Erro ao adicionar aluno'); }
+  }
 
-            <div className="form-input turnoSala">
-                <label>Turno</label>
-                <input
-                type="text"
-                name="turnoSala"
-                placeholder="Manhã"
-                value={formData.turnoSala}
-                onChange={handleChange}
-                required
-                />
-            </div>
+  async function removeAluno(pid) {
+    try {
+      const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      setSala(await res.json());
+    } catch { alert('Erro ao remover aluno'); }
+  }
 
-            <div className="form-input horarioInicio">
-                <label>Horário Início</label>
-                <input
-                type="text"
-                name="horarioInicio"
-                placeholder="8:00"
-                value={formData.horarioInicio}
-                onChange={handleChange}
-                required
-                />
-            </div>
+  if (loading) return <div className="loading-message">Carregando...</div>;
+  if (error)   return <div className="error-message">{error}</div>;
+  if (!sala)   return null;
 
-            <div className="form-input horarioTermino">
-                <label>Horário Término</label>
-                <input
-                type="text"
-                name="horarioTermino"
-                placeholder="12:00"
-                value={formData.horarioTermino}
-                onChange={handleChange}
-                required
-                />
-            </div>
+  return (
+    <div className="info-container">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+        <button onClick={() => navigate(-1)} className="btn-voltar">← Voltar</button>
+        <h1>{sala.nome}</h1>
+        <span className={`tipo-badge tipo-${sala.tipo?.toLowerCase().replace('á','a').replace('ç','c')}`}>
+          {sala.tipo}
+        </span>
+        <span className={`turno-badge ${sala.turno === 'Manhã' ? 'turno-manha' : 'turno-tarde'}`}>
+          {sala.turno}
+        </span>
+      </div>
 
-            <div className="form-input alunosLista">
-                <label>Alunos</label>
-                <input
-                type="text"
-                name="alunos"
-                placeholder="João Pedro"
-                value={formData.alunos}
-                onChange={handleChange}
-                required
-                />
-            </div>
-            </div>
-        </div>
-
-        <br />
-        <h2>Lista de Alunos</h2>
-        <div className="list-items">
-            <div className="item-list header">
-            <label>Id</label>
-            <label>Nome</label>
-            <label>Tipo</label>
-            <label>Turno</label>
-            <label>Alunos</label>
-            </div>
-            <div className="item-list content">
-            <label>1</label>
-            <label>Berçario 1</label>
-            <label>Berçario</label>
-            <label>Manhã</label>
-            <label>17</label>
-            </div>
-        </div>
-
-        <br />
-      
-        <h2>Frequência dos Alunos</h2>
-      <div className="frequencia-container">
-
-        <div className="frequencia-list-header">
-          <div>Nome do Aluno</div>
-          <div>Total de Faltas</div>
-          <div>Frequência</div>
-          <div></div>
-        </div>
-
-        <div className="frequencia-student-list">
-          {alunos.map(aluno => {
-            const frequencia = calcularFrequencia(aluno.totalAulas, aluno.faltas);
-            const freqClass = getFrequenciaClass(frequencia);
-            const isExpanded = expandedStudent === aluno.id;
-
-            return (
-              <div key={aluno.id} className="frequencia-student-item">
-                <div 
-                  className="frequencia-student-row"
-                  onClick={() => toggleDetails(aluno.id)}
-                >
-                  <div className="frequencia-student-name">{aluno.nome}</div>
-                  <div className="frequencia-total-faltas">{aluno.faltas}</div>
-                  <div className={`frequencia-value ${freqClass}`}>{frequencia}%</div>
-                  <div className={`frequencia-arrow ${isExpanded ? 'expanded' : ''}`}>▼</div>
-                </div>
-                
-                <div className={`frequencia-absence-details ${isExpanded ? 'show' : ''}`}>
-                  <div className="frequencia-details-content">
-                    <div className="frequencia-details-title">Dias que faltou:</div>
-                    <div className="frequencia-absence-dates">
-                      {aluno.diasFalta.map((data, index) => (
-                        <span key={index} className="frequencia-absence-date">{data}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+      <div className="form-body">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2>Dados da Sala</h2>
+          {editMode
+            ? <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={handleSaveSala} disabled={saving}>
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+                <button onClick={() => { setEditMode(false); setFormData(sala); }}>
+                  Cancelar
+                </button>
               </div>
-            );
-          })}
+            : <button onClick={() => setEditMode(true)}>
+                <i className="bi bi-pencil" /> Editar
+              </button>
+          }
+        </div>
+
+        <div className="form-grid-sala">
+          {[
+            { label: 'Nome',            field: 'nome',           type: 'text' },
+            { label: 'Horário Início',  field: 'horarioInicio',  type: 'time' },
+            { label: 'Horário Término', field: 'horarioTermino', type: 'time' },
+          ].map(({ label, field, type }) => (
+            <div className="form-input" key={field}>
+              <label>{label}</label>
+              {editMode
+                ? <input type={type} value={formData[field] || ''}
+                    onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))} />
+                : <span className="info-value">{sala[field] || '—'}</span>
+              }
+            </div>
+          ))}
+
+          {editMode && (
+            <>
+              <div className="form-input">
+                <label>Tipo</label>
+                <select value={formData.tipo || ''} onChange={e => setFormData(p => ({ ...p, tipo: e.target.value }))}>
+                  {['Berçario','Maternal','Jardim','Primário'].map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="form-input">
+                <label>Turno</label>
+                <select value={formData.turno || ''} onChange={e => setFormData(p => ({ ...p, turno: e.target.value }))}>
+                  {['Manhã','Tarde'].map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <br />
+
+      <div className="form-body">
+        <h2>Alunos ({sala.totalAlunos})</h2>
+
+        <div className="form-input alunosSearch" style={{ position: 'relative', maxWidth: '360px' }}>
+          <label>Adicionar aluno</label>
+          <input
+            type="text"
+            placeholder="Pesquisar pelo nome..."
+            value={searchQuery}
+            onChange={handleSearch}
+            autoComplete="off"
+          />
+          {searchResults.length > 0 && (
+            <ul className="search-dropdown">
+              {searchResults.map(a => (
+                <li key={a.pid} onClick={() => addAluno(a.pid)}>{a.nome}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="list-items" style={{ marginTop: '1rem' }}>
+          <div className="item-list header">
+            <label>ID</label>
+            <label>Nome</label>
+            <label>Ação</label>
+          </div>
+          {sala.alunos.length === 0 && (
+            <div className="item-list empty"><label>Nenhum aluno nesta sala</label></div>
+          )}
+          {sala.alunos.map(a => (
+            <div className="item-list content" key={a.pid}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/alunos/${a.pid}`)}>
+              <label>{a.pid}</label>
+              <label>{a.nome}</label>
+              <label onClick={e => e.stopPropagation()}>
+                <i className="bi bi-trash acao-icon" title="Remover da sala"
+                  onClick={() => removeAluno(a.pid)} />
+              </label>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
-};
-
-export default SalaInfo;
+}

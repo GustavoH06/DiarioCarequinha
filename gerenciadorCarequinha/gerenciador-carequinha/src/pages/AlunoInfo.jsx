@@ -1,106 +1,9 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
 
-const AlunoInfo = () => {
-    const [formData, setFormData] = useState({
-        nomeSala: '',
-        tipoSala: '',
-        turnoSala: '',
-        horarioInicio: '',
-        horarioTermino: '',
-        alunos: ''
-    });
+const API = 'http://localhost:5000/api/alunos';
 
-    const [alunos, setAlunos] = useState([
-        {
-            id: 1,
-            nome: "João Pedro Silva",
-            totalAulas: 40,
-            faltas: 3,
-            diasFalta: ["03/03/2026", "10/03/2026", "17/03/2026"]
-        },
-        {
-            id: 2,
-            nome: "Maria Eduarda Santos",
-            totalAulas: 40,
-            faltas: 8,
-            diasFalta: ["05/02/2026", "12/02/2026", "19/02/2026", "26/02/2026", "05/03/2026", "12/03/2026", "19/03/2026", "26/03/2026"]
-        },
-        {
-            id: 3,
-            nome: "Lucas Gabriel Oliveira",
-            totalAulas: 40,
-            faltas: 1,
-            diasFalta: ["15/03/2026"]
-        },
-        {
-            id: 4,
-            nome: "Ana Beatriz Costa",
-            totalAulas: 40,
-            faltas: 12,
-            diasFalta: ["01/02/2026", "08/02/2026", "15/02/2026", "22/02/2026", "01/03/2026", "08/03/2026", "15/03/2026", "22/03/2026", "29/03/2026", "05/04/2026", "12/04/2026", "19/04/2026"]
-        },
-        {
-            id: 5,
-            nome: "Pedro Henrique Lima",
-            totalAulas: 40,
-            faltas: 5,
-            diasFalta: ["07/03/2026", "14/03/2026", "21/03/2026", "28/03/2026", "04/04/2026"]
-        }
-    ]);
-
-    const [expandedStudent, setExpandedStudent] = useState(null);
-    const [expandedCompetencia, setExpandedCompetencia] = useState(null);
-    const [expandedSubCompetencia, setExpandedSubCompetencia] = useState({});
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Dados da Sala:', formData);
-        alert('Sala cadastrada com sucesso!');
-    };
-
-    const calcularFrequencia = (totalAulas, faltas) => {
-        const presencas = totalAulas - faltas;
-        const percentual = (presencas / totalAulas) * 100;
-        return percentual.toFixed(1);
-    };
-
-    const getFrequenciaClass = (percentual) => {
-        if (percentual >= 75) return "frequencia-alta";
-        if (percentual >= 50) return "frequencia-media";
-        return "frequencia-baixa";
-    };
-
-    const toggleDetails = (studentId) => {
-        if (expandedStudent === studentId) {
-            setExpandedStudent(null);
-        } else {
-            setExpandedStudent(studentId);
-        }
-    };
-
-    const toggleCompetencia = (competenciaId) => {
-        if (expandedCompetencia === competenciaId) {
-            setExpandedCompetencia(null);
-        } else {
-            setExpandedCompetencia(competenciaId);
-        }
-    };
-
-    const toggleSubCompetencia = (competenciaId, subId) => {
-        const key = `${competenciaId}-${subId}`;
-        setExpandedSubCompetencia(prev => ({
-            ...prev,
-            [key]: !prev[key]
-        }));
-    };
-
-    // Dados das competências
-    const competenciasData = [
+const COMPETENCIAS_DEF = [
         {
             id: 1,
             titulo: "Competência 01",
@@ -113,7 +16,7 @@ const AlunoInfo = () => {
                 { id: "1D5", texto: "Convive sem preconceito respeitando fatos e ou situações." },
                 { id: "1D6", texto: "Busca por meio de experiências, a aprimoração de atitudes e valores." },
                 { id: "1D7", texto: "Demonstra harmonia entre pensamento, palavra e ação." }
-            ]
+            ],
         },
         {
             id: 2,
@@ -128,162 +31,227 @@ const AlunoInfo = () => {
         }
     ];
 
+export default function AlunoInfo() {
+    const { pid }   = useParams();
+    const navigate  = useNavigate();
+
+    const [aluno,       setAluno]       = useState(null);
+    const [loading,     setLoading]     = useState(true);
+    const [error,       setError]       = useState(null);
+
+    const [editMode,    setEditMode]    = useState(false);
+    const [formData,    setFormData]    = useState({});
+    const [saving,      setSaving]      = useState(false);
+
+    const [compMap, setCompMap] = useState({});
+    const [expandedC, setExpandedC] = useState(null);
+    const [expandedSub, setExpandedSub] = useState({});
+
+    useEffect(()=> { fetchAluno(); }, [pid]);
+
+    async function fetchAluno(){
+        setLoading(true);
+        setError(null);
+        try{
+            const res = await fetch (`${API}/${pid}`);
+            if (!res.ok) throw new Error('Aluno não encontrado');
+            const data = await res.json();
+            setAluno(data);
+            setFormData(data);
+
+            //Mapa de competências
+            const map = {};
+            (data.competencias || []).forEach(c => {
+                map[c.itemId] = {nota: c.nota, observacao: c.observacao};
+            });
+            setCompMap(map);
+        } catch (err){
+            setError(err.message);
+        } finally{
+            setLoading(false);
+        }
+    }
+
+    async function handleSaveAluno() {
+        setSaving(true);
+        try{
+            const res = await fetch(`${API}/${pid}`,{
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            if (!res.ok) throw new Error ('Erro ao salvar');
+            const alunoAtualizado = await res.json();
+            setAluno(alunoAtualizado);
+            setEditMode(false);
+        } catch(err){
+            alert(err.message);
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    async function handleSaveCompetencia(itemId){
+        const { nota, observacao } = compMap[itemId] || {};
+        try{
+            await fetch(`${API}/${pid}/competencias`,{
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itemId, nota, observacao: observacao || ''}),
+            });
+        } catch {
+            alert('Erro ao salvar competência');
+        }
+    }
+
+    function setComp(itemId, field, value){
+        setCompMap(prev => ({
+            ...prev,
+            [itemId]: { ...prev[itemId], [field]: value },
+        }));
+    }
+
+    if (loading)    return <div className="loading-message">Carregando...</div>;
+    if (error)      return <div className="error-message">{error}</div>;
+    if (!aluno)     return null;
+
     return (
         <div className="info-container">
-            <h1>Cadastrar Sala</h1>
-            <div className="form-body">
-                <h2>Dados da Sala</h2>
-                <div className="form-grid-sala">
-                    <div className="form-input nomeSala">
-                        <label>Nome Sala</label>
-                        <input
-                            type="text"
-                            name="nomeSala"
-                            placeholder="Segundo Período"
-                            value={formData.nomeSala}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-input tipoSala">
-                        <label>Tipo Sala</label>
-                        <input
-                            type="text"
-                            name="tipoSala"
-                            placeholder="Primário"
-                            value={formData.tipoSala}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-input turnoSala">
-                        <label>Turno</label>
-                        <input
-                            type="text"
-                            name="turnoSala"
-                            placeholder="Manhã"
-                            value={formData.turnoSala}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-input horarioInicio">
-                        <label>Horário Início</label>
-                        <input
-                            type="text"
-                            name="horarioInicio"
-                            placeholder="8:00"
-                            value={formData.horarioInicio}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-input horarioTermino">
-                        <label>Horário Término</label>
-                        <input
-                            type="text"
-                            name="horarioTermino"
-                            placeholder="12:00"
-                            value={formData.horarioTermino}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-input alunosLista">
-                        <label>Alunos</label>
-                        <input
-                            type="text"
-                            name="alunos"
-                            placeholder="João Pedro"
-                            value={formData.alunos}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem'}}>
+                <button onClick={() => navigate(-1)} className="btn-voltar">Voltar</button>
+                <h1>{aluno.nome}</h1>
             </div>
 
-            <br />
-            <h2>Lista de Alunos</h2>
-            <div className="list-items">
-                <div className="item-list header">
-                    <label>Id</label>
-                    <label>Nome</label>
-                    <label>Tipo</label>
-                    <label>Turno</label>
-                    <label>Alunos</label>
+            <div className="form-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <h2>Dados do Aluno</h2>
+                    {editMode
+                        ? <div style={{display: 'flex', gap: '8px'}}>
+                            <button onClick={handleSaveAluno} disabled={saving}>
+                                {saving ? 'Salvando': 'Salvar'}
+
+                            </button>
+                            <button onClick={() => { setEditMode(false); setFormData(aluno); }}>
+                                Cancelar
+                            </button>
+                        </div>
+                        : <button onClick={()=> setEditMode(true)}>
+                            <i className="bi bi-pencil"/> Editar
+                        </button>
+                    }
                 </div>
-                <div className="item-list content">
-                    <label>1</label>
-                    <label>Berçario 1</label>
-                    <label>Berçario</label>
-                    <label>Manhã</label>
-                    <label>17</label>
+
+                <div className="form-grid-">
+                    {[
+                        { label: 'Nome',            field: 'nome',              type: 'text'},
+                        { label: 'Data Nascimento', field: 'dataNascimento',    type: 'date'},
+                        { label: 'Idade',           field: 'idade',             type: 'number'},
+                        { label: 'Sexo',            field: 'sexo',              type: 'text'},
+                        { label: 'Telefone',        field: 'telefone',          type: 'tel'},
+                        { label: 'Endereço',        field: 'endereco',          type: 'text'},
+                        { label: 'Número',          field: 'numero',            type: 'text'},
+                        { label: 'Responsável 1',   field: 'nomePai1',          type: 'text'},
+                        { label: 'Responsável 2',   field: 'nomePai2',          type: 'text'},
+                    ].map(({label, field, type}) =>(
+                        <div className="form-input" key={field}>
+                            <label>{label}</label>
+                            {editMode
+                                ? <input type={type} value={formData[field] || ''}
+                                    onChange={e => setFormData(p => ({ ...p, [field]: e.target.value}))} />
+                                : <span className="info-value">{aluno[field] || '—'}</span>    
+                            }
+                        </div>
+                    ))}
                 </div>
+
+                {aluno.salas?.length > 0 && (
+                    <div style ={{ marginTop: '1rem'}}>
+                        <strong>Turmas:</strong>
+                        {AlunosListComp.salas.map(s => (
+                            <span
+                                key={s.sid}
+                                className="aluno-chip"
+                                style={{cursor: 'pointer' }}
+                                onClick={() => navigate(`/salas/${s.sid}`)}
+                            >
+                                {s.nome}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <br />
 
             <h2>Competências</h2>
             <div className="competencias-container">
-                {competenciasData.map(competencia => {
-                    const isCompExpanded = expandedCompetencia === competencia.id;
+                {COMPETENCIAS_DEF.map(comp => {
+                    const isOpen = expandedC === comp.id;
                     
                     return (
-                        <div key={competencia.id} className="competencia-card">
-                            <div 
-                                className="competencia-header"
-                                onClick={() => toggleCompetencia(competencia.id)}
-                            >
+                        <div key={comp.id} className="competencia-card">
+                            <div className="competencia-header" onClick={() => 
+                                setExpandedC(isOpen ? null : comp.id)}>
                                 <div className="competencia-titulo-area">
-                                    <span className="competencia-numero">{competencia.titulo}</span>
-                                    <span className="competencia-descricao">{competencia.descricao}</span>
+                                    <span className="competencia-numero">{comp.titulo}</span>
+                                    <span className="competencia-descricao">{comp.descricao}</span>
                                 </div>
-                                <div className={`competencia-arrow ${isCompExpanded ? 'expanded' : ''}`}>▼</div>
+                                <div className={`competencia-arrow ${isOpen ? 'expanded' : ''}`}>▼</div>
                             </div>
 
-                            <div className={`competencia-subitens ${isCompExpanded ? 'show' : ''}`}>
-                                {competencia.itens.map(item => {
-                                    const subKey = `${competencia.id}-${item.id}`;
-                                    const isSubExpanded = expandedSubCompetencia[subKey];
+                            <div className={`competencia-subitens ${isOpen ? 'show' : ''}`}>
+                                {comp.itens.map(item => {
+                                    const key = `${comp.id}-${item.id}`;
+                                    const isSubOpen = expandedSub[key];
+                                    const saved = compMap[item.id] || {};
                                     
                                     return (
                                         <div key={item.id} className="subitem-container">
-                                            <div 
-                                                className="subitem-header"
-                                                onClick={() => toggleSubCompetencia(competencia.id, item.id)}
-                                            >
+                                            <div className="subitem-header"
+                                                onClick={() => setExpandedSub(p => ({ ...p, [key]: !p[key] }))}>
                                                 <span className="subitem-id">{item.id}</span>
                                                 <span className="subitem-texto">{item.texto}</span>
-                                                <div className={`subitem-arrow ${isSubExpanded ? 'expanded' : ''}`}>▼</div>
+                                                {saved.nota && (
+                                                    <span className={`comp-nota compt-nota-${saved.nota.toLowerCase()}`}>
+                                                        {saved.nota}
+                                                    </span>
+                                                )}
+                                                <div className={`subitem-arrow ${isSubOpen ? 'expanded' : ''}`}>▼</div>
                                             </div>
                                             
-                                            <div className={`subitem-avaliacao ${isSubExpanded ? 'show' : ''}`}>
+                                            <div className={`subitem-avaliacao ${isSubOpen ? 'show' : ''}`}>
                                                 <div className="avaliacao-content">
                                                     <div className="avaliacao-opcoes">
-                                                        <label className="avaliacao-label">
-                                                            <input type="radio" name={`${item.id}-avaliacao`} value="S" />
-                                                            Satisfatório
-                                                        </label>
-                                                        <label className="avaliacao-label">
-                                                            <input type="radio" name={`${item.id}-avaliacao`} value="PS" />
-                                                            Parcialmente Satisfatório
-                                                        </label>
-                                                        <label className="avaliacao-label">
-                                                            <input type="radio" name={`${item.id}-avaliacao`} value="NS" />
-                                                            Não Satisfatório
-                                                        </label>
+                                                        {['S', 'PS', 'NS'].map(opcao => (
+                                                            <label key={opcao} className="avalicao-label">
+                                                                <input 
+                                                                    type="radio"
+                                                                    name={`${item.id}-avaliacao`}
+                                                                    value={opcao}
+                                                                    checked={saved.nota === opcao}
+                                                                    onChange={() => setComp (item.id, 'nota', opcao)} 
+                                                                />
+                                                                {opcao === 'S'  && 'Satisfatório'}
+                                                                {opcao === 'PS' && 'Parcialmente Satisfatório'}
+                                                                {opcao === 'NS' && 'Não Satisfatório'}
+                                                            </label>
+                                                        ))}
+                                                        
                                                     </div>
+
                                                     <textarea 
                                                         className="avaliacao-obs" 
                                                         placeholder="Observações (opcional)..."
                                                         rows="2"
-                                                    ></textarea>
+                                                        value={saved.observacao || ''}
+                                                        onChange={e => setComp(item.id, 'observacao', e.target.value)}
+                                                    />
+                                                    <button
+                                                        className="btn-salvar-comp"
+                                                        onClick={() => handleSaveCompetencia(item.id)}
+                                                    >
+                                                        Salvar Atualizações
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -297,5 +265,3 @@ const AlunoInfo = () => {
         </div>
     );
 };
-
-export default AlunoInfo;
