@@ -1,212 +1,390 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
-const API        = 'http://localhost:5000/api/salas';
+const API = 'http://localhost:5000/api/salas';
 const API_ALUNOS = 'http://localhost:5000/api/alunos';
 
+// Retorna a data de hoje no formato YYYY-MM-DD
+function hojeISO() {
+    return new Date().toISOString().split('T')[0];
+}
+
+function calcularFrequenciaClass(frequencia) {
+    if (frequencia >= 75) return 'frequencia-alta';
+    if (frequencia >= 50) return 'frequencia-media';
+    return 'frequencia-baixa';
+}
+
 export default function SalaInfo() {
-  const { sid }  = useParams();
-  const navigate = useNavigate();
+    const { sid } = useParams();
+    const navigate = useNavigate();
 
-  const [sala,      setSala]      = useState(null);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
+    const [sala, setSala] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  const [editMode,  setEditMode]  = useState(false);
-  const [formData,  setFormData]  = useState({});
-  const [saving,    setSaving]    = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState({});
+    const [saving, setSaving] = useState(false);
 
-  const [searchQuery,   setSearchQuery]   = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
 
-  useEffect(() => { fetchSala(); }, [sid]);
+    // ── Presença ────────────────────────────────────────────────────────────
+    const [presencas, setPresencas] = useState([]);       // [{alunoId, nome, totalAulas, faltas, frequencia, diasFalta, registros}]
+    const [presencaLoading, setPresencaLoading] = useState(true);
+    const [dataAula, setDataAula] = useState(hojeISO());   // data sendo marcada
+    const [expandedFreq, setExpandedFreq] = useState(null); // alunoId expandido com histórico
 
-  async function fetchSala() {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API}/${sid}`);
-      if (!res.ok) throw new Error('Sala não encontrada');
-      const data = await res.json();
-      setSala(data);
-      setFormData(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    useEffect(() => { fetchSala(); }, [sid]);
+    useEffect(() => { fetchPresencas(); }, [sid]);
+
+    async function fetchSala() {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch(`${API}/${sid}`);
+            if (!res.ok) throw new Error('Sala não encontrada');
+            const data = await res.json();
+            setSala(data);
+            setFormData(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }
-  }
 
-  async function handleSaveSala() {
-    setSaving(true);
-    try {
-      const res = await fetch(`${API}/${sid}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error('Erro ao salvar');
-      const atualizada = await res.json();
-      setSala(atualizada);
-      setEditMode(false);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setSaving(false);
+    async function fetchPresencas() {
+        setPresencaLoading(true);
+        try {
+            const res = await fetch(`${API}/${sid}/presencas`);
+            if (!res.ok) throw new Error();
+            setPresencas(await res.json());
+        } catch {
+            setPresencas([]);
+        } finally {
+            setPresencaLoading(false);
+        }
     }
-  }
 
-  async function handleSearch(e) {
-    const q = e.target.value;
-    setSearchQuery(q);
-    if (q.trim().length < 2) { setSearchResults([]); return; }
-    try {
-      const res  = await fetch(API_ALUNOS);
-      const todos = await res.json();
-      const alunosNaSala = sala.alunos.map(a => a.pid);
-      setSearchResults(
-        todos.filter(a =>
-          a.nome.toLowerCase().includes(q.toLowerCase()) &&
-          !alunosNaSala.includes(a.pid)
-        )
-      );
-    } catch { setSearchResults([]); }
-  }
+    function handleChange(e) {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
 
-  async function addAluno(pid) {
-    try {
-      const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'POST' });
-      if (!res.ok) throw new Error();
-      setSala(await res.json());
-      setSearchQuery('');
-      setSearchResults([]);
-    } catch { alert('Erro ao adicionar aluno'); }
-  }
+    async function handleSaveSala() {
+        setSaving(true);
+        try {
+            const res = await fetch(`${API}/${sid}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            if (!res.ok) throw new Error('Erro ao salvar');
+            const atualizada = await res.json();
+            setSala(atualizada);
+            setEditMode(false);
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setSaving(false);
+        }
+    }
 
-  async function removeAluno(pid) {
-    try {
-      const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      setSala(await res.json());
-    } catch { alert('Erro ao remover aluno'); }
-  }
+    async function handleSearch(e) {
+        const q = e.target.value;
+        setSearchQuery(q);
+        if (q.trim().length < 2) { setSearchResults([]); return; }
+        try {
+            const res = await fetch(API_ALUNOS);
+            const todos = await res.json();
+            const alunosNaSala = sala.alunos.map(a => a.pid);
+            setSearchResults(
+                todos.filter(a =>
+                    a.nome.toLowerCase().includes(q.toLowerCase()) &&
+                    !alunosNaSala.includes(a.pid)
+                )
+            );
+        } catch { setSearchResults([]); }
+    }
 
-  if (loading) return <div className="loading-message">Carregando...</div>;
-  if (error)   return <div className="error-message">{error}</div>;
-  if (!sala)   return null;
+    async function addAluno(pid) {
+        try {
+            const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'POST' });
+            if (!res.ok) throw new Error();
+            setSala(await res.json());
+            setSearchQuery('');
+            setSearchResults([]);
+            fetchPresencas();
+        } catch { alert('Erro ao adicionar aluno'); }
+    }
 
-  return (
-    <div className="info-container">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <button onClick={() => navigate(-1)} className="btn-voltar">← Voltar</button>
-        <h1>{sala.nome}</h1>
-        <span className={`tipo-badge tipo-${sala.tipo?.toLowerCase().replace('á','a').replace('ç','c')}`}>
-          {sala.tipo}
-        </span>
-        <span className={`turno-badge ${sala.turno === 'Manhã' ? 'turno-manha' : 'turno-tarde'}`}>
-          {sala.turno}
-        </span>
-      </div>
+    async function removeAluno(pid) {
+        try {
+            const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error();
+            setSala(await res.json());
+            fetchPresencas();
+        } catch { alert('Erro ao remover aluno'); }
+    }
 
-      <div className="form-body">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Dados da Sala</h2>
-          {editMode
-            ? <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={handleSaveSala} disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar'}
-                </button>
-                <button onClick={() => { setEditMode(false); setFormData(sala); }}>
-                  Cancelar
-                </button>
-              </div>
-            : <button onClick={() => setEditMode(true)}>
-                <i className="bi bi-pencil" /> Editar
-              </button>
-          }
-        </div>
+    // Marca presença/falta de um aluno na data selecionada (toggle)
+    async function marcarPresenca(alunoId, presente) {
+        try {
+            const res = await fetch(`${API}/${sid}/presencas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alunoId, data: dataAula, presente }),
+            });
+            if (!res.ok) throw new Error();
+            fetchPresencas();
+        } catch {
+            alert('Erro ao registrar presença');
+        }
+    }
 
-        <div className="form-grid-sala">
-          {[
-            { label: 'Nome',            field: 'nome',           type: 'text' },
-            { label: 'Horário Início',  field: 'horarioInicio',  type: 'time' },
-            { label: 'Horário Término', field: 'horarioTermino', type: 'time' },
-          ].map(({ label, field, type }) => (
-            <div className="form-input" key={field}>
-              <label>{label}</label>
-              {editMode
-                ? <input type={type} value={formData[field] || ''}
-                    onChange={e => setFormData(p => ({ ...p, [field]: e.target.value }))} />
-                : <span className="info-value">{sala[field] || '—'}</span>
-              }
+    // Retorna o registro de presença do aluno para a data selecionada (se existir)
+    function registroDaData(aluno) {
+        return aluno.registros?.find(r => r.data === dataAula);
+    }
+
+    if (loading) return <div className="loading-message">Carregando...</div>;
+    if (error) return <div className="error-message">{error}</div>;
+    if (!sala) return null;
+
+    return (
+        <div className="info-container">
+            <div className="info-header">
+                <button onClick={() => navigate(-1)} className="btn-voltar">← Voltar</button>
+                <h1>{sala.nome}</h1>
+                <span className={`tipo-badge tipo-${sala.tipo?.toLowerCase().replace('á', 'a').replace('ç', 'c')}`}>
+                    {sala.tipo}
+                </span>
+                <span className={`turno-badge ${sala.turno === 'Manhã' ? 'turno-manha' : 'turno-tarde'}`}>
+                    {sala.turno}
+                </span>
             </div>
-          ))}
 
-          {editMode && (
-            <>
-              <div className="form-input">
-                <label>Tipo</label>
-                <select value={formData.tipo || ''} onChange={e => setFormData(p => ({ ...p, tipo: e.target.value }))}>
-                  {['Berçario','Maternal','Jardim','Primário'].map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div className="form-input">
-                <label>Turno</label>
-                <select value={formData.turno || ''} onChange={e => setFormData(p => ({ ...p, turno: e.target.value }))}>
-                  {['Manhã','Tarde'].map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+            {/* ── Dados da Sala — mesmo layout do SalaForm ───────────────── */}
+            <div className="form-body">
+                <div className="form-header">
+                    <h2>Dados da Sala</h2>
+                    {editMode ? (
+                        <div className="form-actions">
+                            <button onClick={handleSaveSala} disabled={saving} className="btn-salvar">
+                                {saving ? 'Salvando...' : 'Salvar'}
+                            </button>
+                            <button onClick={() => { setEditMode(false); setFormData(sala); }} className="btn-cancelar">
+                                Cancelar
+                            </button>
+                        </div>
+                    ) : (
+                        <button onClick={() => setEditMode(true)} className="btn-editar">
+                            <i className="bi bi-pencil" /> Editar
+                        </button>
+                    )}
+                </div>
 
-      <br />
+                <div className="form-grid-sala">
 
-      <div className="form-body">
-        <h2>Alunos ({sala.totalAlunos})</h2>
+                    <div className="form-input nome">
+                        <label>Nome da Sala</label>
+                        {editMode ? (
+                            <input type="text" name="nome" value={formData.nome || ''} onChange={handleChange} />
+                        ) : (
+                            <span className="info-value">{sala.nome || '—'}</span>
+                        )}
+                    </div>
 
-        <div className="form-input alunosSearch" style={{ position: 'relative', maxWidth: '360px' }}>
-          <label>Adicionar aluno</label>
-          <input
-            type="text"
-            placeholder="Pesquisar pelo nome..."
-            value={searchQuery}
-            onChange={handleSearch}
-            autoComplete="off"
-          />
-          {searchResults.length > 0 && (
-            <ul className="search-dropdown">
-              {searchResults.map(a => (
-                <li key={a.pid} onClick={() => addAluno(a.pid)}>{a.nome}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+                    <div className="form-input tipoSala">
+                        <label>Tipo</label>
+                        {editMode ? (
+                            <select name="tipo" value={formData.tipo || ''} onChange={handleChange}>
+                                <option value="">Selecione...</option>
+                                <option value="Berçario">Berçario</option>
+                                <option value="Maternal">Maternal</option>
+                                <option value="Jardim">Jardim</option>
+                                <option value="Primário">Primário</option>
+                            </select>
+                        ) : (
+                            <span className="info-value">{sala.tipo || '—'}</span>
+                        )}
+                    </div>
 
-        <div className="list-items" style={{ marginTop: '1rem' }}>
-          <div className="item-list header">
-            <label>ID</label>
-            <label>Nome</label>
-            <label>Ação</label>
-          </div>
-          {sala.alunos.length === 0 && (
-            <div className="item-list empty"><label>Nenhum aluno nesta sala</label></div>
-          )}
-          {sala.alunos.map(a => (
-            <div className="item-list content" key={a.pid}
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate(`/alunos/${a.pid}`)}>
-              <label>{a.pid}</label>
-              <label>{a.nome}</label>
-              <label onClick={e => e.stopPropagation()}>
-                <i className="bi bi-trash acao-icon" title="Remover da sala"
-                  onClick={() => removeAluno(a.pid)} />
-              </label>
+                    <div className="form-input turnoSala">
+                        <label>Turno</label>
+                        {editMode ? (
+                            <select name="turno" value={formData.turno || ''} onChange={handleChange}>
+                                <option value="">Selecione...</option>
+                                <option value="Manhã">Manhã</option>
+                                <option value="Tarde">Tarde</option>
+                            </select>
+                        ) : (
+                            <span className="info-value">{sala.turno || '—'}</span>
+                        )}
+                    </div>
+
+                    <div className="form-input horarioInicio">
+                        <label>Horário Início</label>
+                        {editMode ? (
+                            <input type="time" name="horarioInicio" value={formData.horarioInicio || ''} onChange={handleChange} />
+                        ) : (
+                            <span className="info-value">{sala.horarioInicio || '—'}</span>
+                        )}
+                    </div>
+
+                    <div className="form-input horarioTermino">
+                        <label>Horário Término</label>
+                        {editMode ? (
+                            <input type="time" name="horarioTermino" value={formData.horarioTermino || ''} onChange={handleChange} />
+                        ) : (
+                            <span className="info-value">{sala.horarioTermino || '—'}</span>
+                        )}
+                    </div>
+
+                </div>
             </div>
-          ))}
+
+            <br />
+
+            {/* ── Alunos da Sala — mesmo padrão de busca do SalaForm ─────── */}
+            <div className="form-body">
+                <h2>Alunos ({sala.totalAlunos || 0})</h2>
+
+                <div className="form-input alunosSearch">
+                    <label>Adicionar aluno</label>
+                    <input
+                        type="text"
+                        placeholder="Pesquisar pelo nome..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        autoComplete="off"
+                    />
+                    {searchResults.length > 0 && (
+                        <ul className="search-dropdown">
+                            {searchResults.map(a => (
+                                <li key={a.pid} onClick={() => addAluno(a.pid)}>
+                                    <strong>{a.nome}</strong>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                {sala.alunos.length > 0 && (
+                    <div className="alunos-chips">
+                        {sala.alunos.map(a => (
+                            <span key={a.pid} className="aluno-chip">
+                                <span style={{ cursor: 'pointer' }} onClick={() => navigate(`/alunos/${a.pid}`)}>
+                                    {a.nome}
+                                </span>
+                                <button type="button" onClick={() => removeAluno(a.pid)} title="Remover da sala">×</button>
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {sala.alunos.length === 0 && (
+                    <div className="list-items" style={{ marginTop: '1rem' }}>
+                        <div className="item-list empty">
+                            <label>Nenhum aluno nesta sala</label>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <br />
+
+            {/* ── Presença ────────────────────────────────────────────────── */}
+            <div className="form-body">
+                <h2>Presença</h2>
+
+                {sala.alunos.length === 0 ? (
+                    <div className="list-items">
+                        <div className="item-list empty">
+                            <label>Adicione alunos à sala para registrar presença</label>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        {/* Seletor de data da aula */}
+                        <div className="form-input" style={{ maxWidth: '220px', marginBottom: '1rem' }}>
+                            <label>Data da aula</label>
+                            <input
+                                type="date"
+                                value={dataAula}
+                                onChange={e => setDataAula(e.target.value)}
+                            />
+                        </div>
+
+                        {presencaLoading ? (
+                            <div className="loading-message-small">Carregando frequência...</div>
+                        ) : (
+                            <div className="frequencia-container">
+                                <div className="frequencia-list-header">
+                                    <div>Nome do Aluno</div>
+                                    <div>Total de Faltas</div>
+                                    <div>Frequência</div>
+                                    <div>{dataAula}</div>
+                                </div>
+
+                                <div className="frequencia-student-list">
+                                    {presencas.map(p => {
+                                        const isExpanded = expandedFreq === p.alunoId;
+                                        const freqClass  = calcularFrequenciaClass(p.frequencia);
+                                        const registroHoje = registroDaData(p);
+
+                                        return (
+                                            <div key={p.alunoId} className="frequencia-student-item">
+                                                <div className="frequencia-student-row" onClick={() =>
+                                                    setExpandedFreq(isExpanded ? null : p.alunoId)}>
+                                                    <div className="frequencia-student-name">{p.nome}</div>
+                                                    <div className="frequencia-total-faltas">{p.faltas}</div>
+                                                    <div className={`frequencia-value ${freqClass}`}>{p.frequencia}%</div>
+
+                                                    {/* Botões de marcação para a data selecionada */}
+                                                    <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '8px' }}>
+                                                        <button
+                                                            type="button"
+                                                            className={`btn-presenca ${registroHoje?.presente === true ? 'ativo-presente' : ''}`}
+                                                            onClick={() => marcarPresenca(p.alunoId, true)}
+                                                            title="Marcar presença"
+                                                        >
+                                                            Presente
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className={`btn-presenca ${registroHoje?.presente === false ? 'ativo-falta' : ''}`}
+                                                            onClick={() => marcarPresenca(p.alunoId, false)}
+                                                            title="Marcar falta"
+                                                        >
+                                                            Falta
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className={`frequencia-absence-details ${isExpanded ? 'show' : ''}`}>
+                                                    <div className="frequencia-details-content">
+                                                        <div className="frequencia-details-title">
+                                                            {p.diasFalta.length > 0 ? 'Dias que faltou:' : 'Nenhuma falta registrada'}
+                                                        </div>
+                                                        <div className="frequencia-absence-dates">
+                                                            {p.diasFalta.map((data, index) => (
+                                                                <span key={index} className="frequencia-absence-date">{data}</span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

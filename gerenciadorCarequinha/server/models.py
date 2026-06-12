@@ -23,6 +23,26 @@ class Competencia(db.Model):
             'nota':         self.nota,
             'observacao':   self.observacao,
         }
+    
+class Presenca(db.Model):
+    __tablename__ = 'presencas'
+
+    id        = db.Column(db.Integer, primary_key=True)
+    aluno_id  = db.Column(db.Integer, db.ForeignKey('alunos.pid'), nullable=False)
+    sala_id   = db.Column(db.Integer, db.ForeignKey('salas.sid'),  nullable=False)
+    data      = db.Column(db.Text, nullable=False)
+    presente  = db.Column(db.Boolean, nullable=False, default=True)
+ 
+    __table_args__ = ( db.UniqueConstraint('aluno_id', 'sala_id', 'data', name='uq_presenca_aluno_sala_data'), )
+
+    def to_dict(self):
+        return{
+            'id': self.id,
+            'alunoId': self.aluno_id,
+            'salaId': self.sala_id,
+            'data': self.data,
+            'presente': self.presente,
+        }
 
 class Alunos(db.Model):
 
