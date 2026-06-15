@@ -9,11 +9,6 @@ const Navbar = () => {
     
 
     const items = [
-        /*{
-            routerLink: "/",
-            icon: "bi bi-list",
-            label: "index"
-        },*/
 
         {
             routerLink: "/home",

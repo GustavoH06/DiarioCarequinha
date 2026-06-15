@@ -2015,3 +2015,16 @@ select:focus,
 .frequencia-student-row {
     grid-template-columns: 2fr 1fr 1fr 1.5fr;
 }
+
+.field-hint {
+    font-size: 12px;
+    color: #e53e3e;
+    margin-top: 4px;
+}
+
+.form-input .btn-editar {
+    height: 42px;
+    padding: 0 14px;
+    flex-shrink: 0;
+    margin-top: 0;
+}

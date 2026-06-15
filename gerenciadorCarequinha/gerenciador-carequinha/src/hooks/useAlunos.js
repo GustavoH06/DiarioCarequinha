@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 
-const API = 'http://localhost:5000/api/alunos';
+import { API_BASE } from './apiConfig';
+
+const API = `${API_BASE}/api/alunos`;
 
 export function useAlunos() {
-  const [alunos, setAlunos] = useState([]);
+  const [alunos,  setAlunos]  = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error,   setError]   = useState(null);
 
   useEffect(() => { fetchAlunos(); }, []);
 
@@ -30,21 +32,21 @@ export function useAlunos() {
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error('Erro ao cadastrar aluno');
-    const novoAluno = await res.json();
-    setAlunos(prev => [...prev, novoAluno]);
-    return novoAluno;
+    const novo = await res.json();
+    setAlunos(prev => [...prev, novo]);
+    return novo;
   }
 
-  async function updateAluno(pid, payload){
-    const res = await fetch(`${API}/${pid}`,{
+  async function updateAluno(pid, payload) {
+    const res = await fetch(`${API}/${pid}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    if(!res.ok)throw new Error('Erro ao atualizar aluno');
-    const atualizaAluno = await res.json();
-    setAlunos(prev => prev.map(a =>a.pid === pid ? atualizaAluno : a));
-    return atualizaAluno;
+    if (!res.ok) throw new Error('Erro ao atualizar aluno');
+    const atualizado = await res.json();
+    setAlunos(prev => prev.map(a => a.pid === pid ? atualizado : a));
+    return atualizado;
   }
 
   async function deleteAluno(pid) {
@@ -53,15 +55,23 @@ export function useAlunos() {
     setAlunos(prev => prev.filter(a => a.pid !== pid));
   }
 
-  async function saveCompetencia(pid, itemId, nota, observacao){
-    const res = await fetch(`${API}/${pid}/competencias`,{
+  async function saveCompetencia(pid, itemId, nota, observacao) {
+    const res = await fetch(`${API}/${pid}/competencias`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ itemId, nota, observacao }),
     });
-    if(!res.ok) throw new Error("Erro ao salvar competências");
+    if (!res.ok) throw new Error('Erro ao salvar competência');
     return res.json();
   }
 
-  return { alunos, loading, error, createAluno, updateAluno, deleteAluno, saveCompetencia };
+  async function addAlunoToSala(sid, pid) {
+    const res = await fetch(`${API.replace('/api/alunos', '/api/salas')}/${sid}/alunos/${pid}`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error('Erro ao adicionar aluno à sala');
+    return res.json();
+  }
+
+  return { alunos, loading, error, createAluno, updateAluno, deleteAluno, saveCompetencia, addAlunoToSala };
 }

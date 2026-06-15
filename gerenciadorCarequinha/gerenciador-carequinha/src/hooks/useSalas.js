@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { API_BASE } from './apiConfig';
 
-const API       = 'http://localhost:5000/api/salas';
-const API_ALUNOS = 'http://localhost:5000/api/alunos';
+const API        = `${API_BASE}/api/salas`;
+const API_ALUNOS = `${API_BASE}/api/alunos`;
 
 export function useSalas() {
   const [salas,   setSalas]   = useState([]);
@@ -71,11 +72,11 @@ export function useSalas() {
   }
 
   async function searchAlunos(query) {
-    if (!query || query.trim().length < 2) return [];
     try {
       const res = await fetch(API_ALUNOS);
       if (!res.ok) throw new Error();
       const todos = await res.json();
+      if (!query || query.trim().length === 0) return todos;
       const q = query.toLowerCase();
       return todos.filter(a => a.nome.toLowerCase().includes(q));
     } catch {

@@ -15,36 +15,40 @@ export default function SalaForm() {
   const [submitError, setSubmitError] = useState(null);
   const [loading,     setLoading]     = useState(false);
 
-  const [searchQuery,   setSearchQuery]   = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [alunosSelecionados, setAlunosSelecionados] = useState([]); // [{pid, nome}]
+  const [alunoSearch,        setAlunoSearch]        = useState('');
+  const [alunoDropdownOpen,  setAlunoDropdownOpen]  = useState(false);
+  const [alunosSelecionados, setAlunosSelecionados] = useState([]);
 
   const { salas, createSala, deleteSala, searchAlunos } = useSalas();
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Cache local dos alunos buscados para exibir no dropdown
+  const [todosAlunos, setTodosAlunos] = useState([]);
+
+  async function abrirDropdown() {
+    if (!alunoDropdownOpen && todosAlunos.length === 0) {
+      const results = await searchAlunos(''); // busca todos
+      setTodosAlunos(results);
+    }
+    setAlunoDropdownOpen(o => !o);
   }
 
-  async function handleSearch(e) {
-    const q = e.target.value;
-    setSearchQuery(q);
-    if (q.trim().length >= 2) {
-      const results = await searchAlunos(q);
-      setSearchResults(results.filter(r => !alunosSelecionados.find(a => a.pid === r.pid)));
-    } else {
-      setSearchResults([]);
-    }
-  }
+  const alunosFiltrados = todosAlunos.filter(a =>
+    a.nome.toLowerCase().includes(alunoSearch.toLowerCase()) &&
+    !alunosSelecionados.find(sel => sel.pid === a.pid)
+  );
 
   function selectAluno(aluno) {
     setAlunosSelecionados(prev => [...prev, { pid: aluno.pid, nome: aluno.nome }]);
-    setSearchQuery('');
-    setSearchResults([]);
+    setAlunoSearch('');
   }
 
   function removeAluno(pid) {
     setAlunosSelecionados(prev => prev.filter(a => a.pid !== pid));
+  }
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(e) {
@@ -58,6 +62,7 @@ export default function SalaForm() {
       });
       setFormData(emptyForm);
       setAlunosSelecionados([]);
+      setTodosAlunos([]);
     } catch (err) {
       setSubmitError(err.message);
     } finally {
@@ -69,7 +74,7 @@ export default function SalaForm() {
     <div className="form-container">
       <h1>Cadastrar Sala</h1>
 
-      {submitError && <p style={{ color: 'red' }}>{submitError}</p>}
+      {submitError && <p className="error-message">{submitError}</p>}
 
       <div className="form-body">
         <h2>Dados da Sala</h2>
@@ -115,24 +120,41 @@ export default function SalaForm() {
 
         </div>
 
+        {/* ── Seleção de Alunos ─────────────────────────────────── */}
         <h2>Alunos</h2>
 
         <div className="form-input alunosSearch">
-          <label>Pesquisar aluno pelo nome</label>
-          <input
-            type="text"
-            placeholder="Ex: João Pedro"
-            value={searchQuery}
-            onChange={handleSearch}
-            autoComplete="off"
-          />
+          <label>Adicionar aluno</label>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              placeholder="Pesquisar pelo nome..."
+              value={alunoSearch}
+              onChange={e => { setAlunoSearch(e.target.value); if (!alunoDropdownOpen) setAlunoDropdownOpen(true); }}
+              onFocus={() => { if (!alunoDropdownOpen) abrirDropdown(); }}
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              className="btn-editar"
+              style={{ whiteSpace: 'nowrap', marginTop: 0 }}
+              onClick={abrirDropdown}
+            >
+              {alunoDropdownOpen ? 'Fechar ▲' : 'Ver todos ▼'}
+            </button>
+          </div>
 
-          {searchResults.length > 0 && (
+          {alunoDropdownOpen && (
             <ul className="search-dropdown">
-              {searchResults.map(a => (
+              {alunosFiltrados.length === 0 && (
+                <li style={{ color: '#a0aec0', cursor: 'default' }}>Nenhum aluno encontrado</li>
+              )}
+              {alunosFiltrados.map(a => (
                 <li key={a.pid} onClick={() => selectAluno(a)}>
                   <strong>{a.nome}</strong>
-                  {a.sala && <span className="aluno-sala-badge">{a.sala}</span>}
+                  {a.salas?.length > 0 && (
+                    <span className="aluno-sala-badge">{a.salas.map(s => s.nome).join(', ')}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -157,7 +179,6 @@ export default function SalaForm() {
       </div>
 
       <br />
-
       <SalasListComp salas={salas} onDelete={deleteSala} />
     </div>
   );
