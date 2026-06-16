@@ -1,11 +1,8 @@
+// pages/SalaInfo.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
+import { API_ALUNOS } from '../hooks/configApi';
 
-
-const API = 'http://localhost:5000/api/salas';
-const API_ALUNOS = 'http://localhost:5000/api/alunos';
-
-// Retorna a data de hoje no formato YYYY-MM-DD
 function hojeISO() {
     return new Date().toISOString().split('T')[0];
 }
@@ -31,7 +28,6 @@ export default function SalaInfo() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
-    // ── Presença ────────────────────────────────────────────────────────────
     const [presencas, setPresencas] = useState([]);
     const [presencaLoading, setPresencaLoading] = useState(true);
     const [dataAula, setDataAula] = useState(hojeISO());
@@ -44,7 +40,7 @@ export default function SalaInfo() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`${API}/${sid}`);
+            const res = await fetch(`${API_SALAS}/${sid}`);
             if (!res.ok) throw new Error('Sala não encontrada');
             const data = await res.json();
             setSala(data);
@@ -59,7 +55,7 @@ export default function SalaInfo() {
     async function fetchPresencas() {
         setPresencaLoading(true);
         try {
-            const res = await fetch(`${API}/${sid}/presencas`);
+            const res = await fetch(`${API_SALAS}/${sid}/presencas`);
             if (!res.ok) throw new Error();
             setPresencas(await res.json());
         } catch {
@@ -77,7 +73,7 @@ export default function SalaInfo() {
     async function handleSaveSala() {
         setSaving(true);
         try {
-            const res = await fetch(`${API}/${sid}`, {
+            const res = await fetch(`${API_SALAS}/${sid}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -86,6 +82,7 @@ export default function SalaInfo() {
             const atualizada = await res.json();
             setSala(atualizada);
             setEditMode(false);
+            alert('Dados da sala salvos com sucesso!');
         } catch (err) {
             alert(err.message);
         } finally {
@@ -112,7 +109,7 @@ export default function SalaInfo() {
 
     async function addAluno(pid) {
         try {
-            const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'POST' });
+            const res = await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'POST' });
             if (!res.ok) throw new Error();
             setSala(await res.json());
             setSearchQuery('');
@@ -123,7 +120,7 @@ export default function SalaInfo() {
 
     async function removeAluno(pid) {
         try {
-            const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'DELETE' });
+            const res = await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'DELETE' });
             if (!res.ok) throw new Error();
             setSala(await res.json());
             fetchPresencas();
@@ -132,7 +129,7 @@ export default function SalaInfo() {
 
     async function marcarPresenca(alunoId, presente) {
         try {
-            const res = await fetch(`${API}/${sid}/presencas`, {
+            const res = await fetch(`${API_SALAS}/${sid}/presencas`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ alunoId, data: dataAula, presente }),
@@ -185,7 +182,6 @@ export default function SalaInfo() {
                 </div>
 
                 <div className="form-grid-sala">
-
                     <div className="form-input nome">
                         <label>Nome da Sala</label>
                         {editMode ? (
@@ -240,7 +236,6 @@ export default function SalaInfo() {
                             <span className="info-value">{sala.horarioTermino || '—'}</span>
                         )}
                     </div>
-
                 </div>
             </div>
 
@@ -327,7 +322,7 @@ export default function SalaInfo() {
                                 <div className="frequencia-student-list">
                                     {presencas.map(p => {
                                         const isExpanded = expandedFreq === p.alunoId;
-                                        const freqClass  = calcularFrequenciaClass(p.frequencia);
+                                        const freqClass = calcularFrequenciaClass(p.frequencia);
                                         const registroHoje = registroDaData(p);
 
                                         return (

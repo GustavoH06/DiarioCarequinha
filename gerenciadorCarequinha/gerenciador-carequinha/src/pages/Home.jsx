@@ -4,6 +4,7 @@ import SalasListComp from "../blueprints/SalasListComp";
 import { useSalas } from "../hooks/useSalas";
 import { useAlunos } from "../hooks/useAlunos";
 import { useNavigate } from 'react-router';
+import { BASE_URL } from "../hooks/configApi";
 
 function Home() {
     const { salas, deleteSala } = useSalas();
@@ -42,7 +43,7 @@ function Home() {
         setLoadingInfo(true);
         
         try {
-            const response = await fetch(`http://localhost:5000/api/salas/${sala.sid}`);
+            const response = await fetch(`${BASE_URL}/api/salas/${sala.sid}`);
             if (response.ok) {
                 const data = await response.json();
                 setSalaInfo(data);

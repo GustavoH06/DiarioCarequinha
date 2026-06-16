@@ -1,9 +1,7 @@
-// AlunoInfo.jsx - layout igual ao AlunoForm
+// pages/AlunoInfo.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-
-
-const API = 'http://localhost:5000/api/alunos';
+import { API_ALUNOS } from '../hooks/configApi';
 
 const COMPETENCIAS_DEF = [
     {
@@ -55,7 +53,7 @@ export default function AlunoInfo() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`${API}/${pid}`);
+            const res = await fetch(`${API_ALUNOS}/${pid}`);
             if (!res.ok) throw new Error('Aluno não encontrado');
             const data = await res.json();
             setAluno(data);
@@ -81,7 +79,7 @@ export default function AlunoInfo() {
     async function handleSaveAluno() {
         setSaving(true);
         try {
-            const res = await fetch(`${API}/${pid}`, {
+            const res = await fetch(`${API_ALUNOS}/${pid}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -90,6 +88,7 @@ export default function AlunoInfo() {
             const alunoAtualizado = await res.json();
             setAluno(alunoAtualizado);
             setEditMode(false);
+            alert('Dados do aluno salvos com sucesso!');
         } catch (err) {
             alert(err.message);
         } finally {
@@ -100,14 +99,15 @@ export default function AlunoInfo() {
     async function handleSaveCompetencia(itemId) {
         const { nota, observacao } = compMap[itemId] || {};
         try {
-            await fetch(`${API}/${pid}/competencias`, {
+            const res = await fetch(`${API_ALUNOS}/${pid}/competencias`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ itemId, nota, observacao: observacao || '' }),
             });
+            if (!res.ok) throw new Error('Erro ao salvar competência');
             alert('Competência salva com sucesso!');
-        } catch {
-            alert('Erro ao salvar competência');
+        } catch (err) {
+            alert(err.message || 'Erro ao salvar competência');
         }
     }
 
@@ -159,7 +159,6 @@ export default function AlunoInfo() {
                 </div>
 
                 <div className="form-grid">
-
                     <div className="form-input nome">
                         <label>Nome</label>
                         {editMode ? (
@@ -245,7 +244,6 @@ export default function AlunoInfo() {
                             <span className="info-value">{aluno.numero || '—'}</span>
                         )}
                     </div>
-
                 </div>
             </div>
 

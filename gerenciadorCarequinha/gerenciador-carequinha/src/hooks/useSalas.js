@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-
-const BASE       = 'http://localhost:5000';
-const API        = `${BASE}/api/salas`;
-const API_ALUNOS = `${BASE}/api/alunos`;
+import { API_SALAS, API_ALUNOS } from './configApi';
 
 export function useSalas() {
-  const [salas,   setSalas]   = useState([]);
+  const [salas, setSalas] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => { fetchSalas(); }, []);
 
@@ -15,7 +12,7 @@ export function useSalas() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(API);
+      const res = await fetch(API_SALAS);
       if (!res.ok) throw new Error('Erro ao carregar salas');
       setSalas(await res.json());
     } catch (err) {
@@ -26,7 +23,7 @@ export function useSalas() {
   }
 
   async function createSala(payload) {
-    const res = await fetch(API, {
+    const res = await fetch(API_SALAS, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -38,7 +35,7 @@ export function useSalas() {
   }
 
   async function updateSala(sid, payload) {
-    const res = await fetch(`${API}/${sid}`, {
+    const res = await fetch(`${API_SALAS}/${sid}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -50,13 +47,13 @@ export function useSalas() {
   }
 
   async function deleteSala(sid) {
-    const res = await fetch(`${API}/${sid}`, { method: 'DELETE' });
+    const res = await fetch(`${API_SALAS}/${sid}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Erro ao remover sala');
     setSalas(prev => prev.filter(s => s.sid !== sid));
   }
 
   async function addAlunoToSala(sid, pid) {
-    const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'POST' });
+    const res = await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'POST' });
     if (!res.ok) throw new Error('Erro ao adicionar aluno');
     const atualizada = await res.json();
     setSalas(prev => prev.map(s => s.sid === sid ? atualizada : s));
@@ -64,14 +61,13 @@ export function useSalas() {
   }
 
   async function removeAlunoFromSala(sid, pid) {
-    const res = await fetch(`${API}/${sid}/alunos/${pid}`, { method: 'DELETE' });
+    const res = await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Erro ao remover aluno da sala');
     const atualizada = await res.json();
     setSalas(prev => prev.map(s => s.sid === sid ? atualizada : s));
     return atualizada;
   }
 
-  // Retorna todos quando query vazia, filtra pelo nome quando preenchida
   async function searchAlunos(query) {
     try {
       const res = await fetch(API_ALUNOS);
@@ -86,13 +82,13 @@ export function useSalas() {
   }
 
   async function fetchPresencas(sid) {
-    const res = await fetch(`${API}/${sid}/presencas`);
+    const res = await fetch(`${API_SALAS}/${sid}/presencas`);
     if (!res.ok) throw new Error('Erro ao carregar presenças');
     return res.json();
   }
 
   async function markPresenca(sid, alunoId, data, presente) {
-    const res = await fetch(`${API}/${sid}/presencas`, {
+    const res = await fetch(`${API_SALAS}/${sid}/presencas`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ alunoId, data, presente }),
@@ -102,7 +98,7 @@ export function useSalas() {
   }
 
   async function deletePresenca(sid, registroId) {
-    const res = await fetch(`${API}/${sid}/presencas/${registroId}`, { method: 'DELETE' });
+    const res = await fetch(`${API_SALAS}/${sid}/presencas/${registroId}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Erro ao remover presença');
     return res.json();
   }
