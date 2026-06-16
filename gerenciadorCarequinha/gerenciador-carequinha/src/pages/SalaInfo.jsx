@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 
+
 const API = 'http://localhost:5000/api/salas';
 const API_ALUNOS = 'http://localhost:5000/api/alunos';
 
@@ -31,10 +32,10 @@ export default function SalaInfo() {
     const [searchResults, setSearchResults] = useState([]);
 
     // ── Presença ────────────────────────────────────────────────────────────
-    const [presencas, setPresencas] = useState([]);       // [{alunoId, nome, totalAulas, faltas, frequencia, diasFalta, registros}]
+    const [presencas, setPresencas] = useState([]);
     const [presencaLoading, setPresencaLoading] = useState(true);
-    const [dataAula, setDataAula] = useState(hojeISO());   // data sendo marcada
-    const [expandedFreq, setExpandedFreq] = useState(null); // alunoId expandido com histórico
+    const [dataAula, setDataAula] = useState(hojeISO());
+    const [expandedFreq, setExpandedFreq] = useState(null);
 
     useEffect(() => { fetchSala(); }, [sid]);
     useEffect(() => { fetchPresencas(); }, [sid]);
@@ -129,7 +130,6 @@ export default function SalaInfo() {
         } catch { alert('Erro ao remover aluno'); }
     }
 
-    // Marca presença/falta de um aluno na data selecionada (toggle)
     async function marcarPresenca(alunoId, presente) {
         try {
             const res = await fetch(`${API}/${sid}/presencas`, {
@@ -144,7 +144,6 @@ export default function SalaInfo() {
         }
     }
 
-    // Retorna o registro de presença do aluno para a data selecionada (se existir)
     function registroDaData(aluno) {
         return aluno.registros?.find(r => r.data === dataAula);
     }
@@ -166,7 +165,6 @@ export default function SalaInfo() {
                 </span>
             </div>
 
-            {/* ── Dados da Sala — mesmo layout do SalaForm ───────────────── */}
             <div className="form-body">
                 <div className="form-header">
                     <h2>Dados da Sala</h2>
@@ -248,7 +246,6 @@ export default function SalaInfo() {
 
             <br />
 
-            {/* ── Alunos da Sala — mesmo padrão de busca do SalaForm ─────── */}
             <div className="form-body">
                 <h2>Alunos ({sala.totalAlunos || 0})</h2>
 
@@ -296,7 +293,6 @@ export default function SalaInfo() {
 
             <br />
 
-            {/* ── Presença ────────────────────────────────────────────────── */}
             <div className="form-body">
                 <h2>Presença</h2>
 
@@ -308,7 +304,6 @@ export default function SalaInfo() {
                     </div>
                 ) : (
                     <>
-                        {/* Seletor de data da aula */}
                         <div className="form-input" style={{ maxWidth: '220px', marginBottom: '1rem' }}>
                             <label>Data da aula</label>
                             <input
@@ -343,7 +338,6 @@ export default function SalaInfo() {
                                                     <div className="frequencia-total-faltas">{p.faltas}</div>
                                                     <div className={`frequencia-value ${freqClass}`}>{p.frequencia}%</div>
 
-                                                    {/* Botões de marcação para a data selecionada */}
                                                     <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '8px' }}>
                                                         <button
                                                             type="button"

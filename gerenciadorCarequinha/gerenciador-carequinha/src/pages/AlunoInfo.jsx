@@ -1,5 +1,7 @@
+// AlunoInfo.jsx - layout igual ao AlunoForm
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
+
 
 const API = 'http://localhost:5000/api/alunos';
 
@@ -137,7 +139,6 @@ export default function AlunoInfo() {
                 )}
             </div>
 
-            {/* ── Dados do Aluno — mesmo layout do AlunoForm ─────────────── */}
             <div className="form-body">
                 <div className="form-header">
                     <h2>Dados do Aluno</h2>
@@ -250,7 +251,6 @@ export default function AlunoInfo() {
 
             <br />
 
-            {/* ── Competências ─────────────────────────────────────────── */}
             <h2>Competências</h2>
             <div className="competencias-container">
                 {COMPETENCIAS_DEF.map(comp => {

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { API_BASE } from './apiConfig';
 
-const API        = `${API_BASE}/api/salas`;
-const API_ALUNOS = `${API_BASE}/api/alunos`;
+const BASE       = 'http://localhost:5000';
+const API        = `${BASE}/api/salas`;
+const API_ALUNOS = `${BASE}/api/alunos`;
 
 export function useSalas() {
   const [salas,   setSalas]   = useState([]);
@@ -71,6 +71,7 @@ export function useSalas() {
     return atualizada;
   }
 
+  // Retorna todos quando query vazia, filtra pelo nome quando preenchida
   async function searchAlunos(query) {
     try {
       const res = await fetch(API_ALUNOS);
@@ -106,7 +107,10 @@ export function useSalas() {
     return res.json();
   }
 
-  return { salas, loading, error, createSala, updateSala, deleteSala,
-           addAlunoToSala, removeAlunoFromSala, searchAlunos,
-           fetchPresencas, markPresenca, deletePresenca };
+  return {
+    salas, loading, error,
+    createSala, updateSala, deleteSala,
+    addAlunoToSala, removeAlunoFromSala,
+    searchAlunos, fetchPresencas, markPresenca, deletePresenca,
+  };
 }

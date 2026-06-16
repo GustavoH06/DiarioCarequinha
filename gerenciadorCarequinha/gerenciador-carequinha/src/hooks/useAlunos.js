@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { API_BASE } from './apiConfig';
-
-const API = `${API_BASE}/api/alunos`;
+const BASE = 'http://localhost:5000';
+const API  = `${BASE}/api/alunos`;
 
 export function useAlunos() {
   const [alunos,  setAlunos]  = useState([]);
@@ -66,9 +65,7 @@ export function useAlunos() {
   }
 
   async function addAlunoToSala(sid, pid) {
-    const res = await fetch(`${API.replace('/api/alunos', '/api/salas')}/${sid}/alunos/${pid}`, {
-      method: 'POST',
-    });
+    const res = await fetch(`${BASE}/api/salas/${sid}/alunos/${pid}`, { method: 'POST' });
     if (!res.ok) throw new Error('Erro ao adicionar aluno à sala');
     return res.json();
   }

@@ -2028,3 +2028,75 @@ select:focus,
     flex-shrink: 0;
     margin-top: 0;
 }
+
+
+/* ── Navbar dropdown ── */
+.sidenav-dropdown {
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    min-width: 140px;
+    z-index: 200;
+}
+
+.sidenav-dropdown li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #313131;
+    transition: background 0.15s;
+}
+
+.sidenav-dropdown li:hover {
+    background: #f0f9ff;
+    color: #76C5F2;
+}
+
+.sidenav-dropdown li i {
+    font-size: 16px;
+}
+
+/* ── Campo busca + botão "Ver todos" ── */
+/* O input cresce, o botão fica pequeno e fixo */
+.form-input.alunosSearch > div {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-input.alunosSearch > div input {
+    flex: 1;
+    min-width: 0;   /* impede o input de transbordar */
+}
+
+.form-input.alunosSearch > div button {
+    flex-shrink: 0;
+    width: auto;
+    min-width: auto;
+    padding: 0 12px;
+    height: 42px;
+    margin-top: 0;
+    font-size: 13px;
+    white-space: nowrap;
+    background: linear-gradient(135deg, #84CEF9 0%, #76C5F2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.form-input.alunosSearch > div button:hover {
+    opacity: 0.9;
+    transform: none;
+    box-shadow: none;
+}
