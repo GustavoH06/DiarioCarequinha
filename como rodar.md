@@ -1,19 +1,18 @@
-///////////////Run///////////////
-##Go to frontend
+## Go to frontend
 cd <frontend>
 
-##Install dependencies
+## Install dependencies
 npm i
 
-##Go to backend
+## Go to backend
 cd <server>
 
-##Create Venv environment
+## Create Venv environment
 python -m venv venv
 
-##Activate venv
+## Activate venv
 Linux:source venv/bin/activate
 Windows: venv/Scripts/activate
 
-##Install dependencies
+## Install dependencies
 pip install -r requirements.txt
