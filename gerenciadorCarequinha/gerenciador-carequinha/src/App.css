@@ -2740,3 +2740,210 @@ select:focus,
 .form-input.pais { grid-area: pais; }
 .form-input.end { grid-area: end; }
 .form-input.numero { grid-area: numero; }
+
+.salas-manager {
+    grid-column: span 3;
+    margin-top: 8px;
+}
+
+.salas-manager-title {
+    color: #76C5F2;
+    margin: 10px 0 12px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.salas-manager-search {
+    display: flex;
+    gap: 8px;
+}
+
+.salas-manager-search input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #717171;
+    font-size: 16px;
+    background-color: white;
+    transition: all 0.2s;
+}
+
+.salas-manager-search input:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+.salas-manager-search .btn-editar {
+    white-space: nowrap;
+    margin-top: 0;
+    padding: 10px 16px;
+    height: auto;
+}
+
+.salas-selecionadas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    min-height: 50px;
+}
+
+.salas-selecionadas-empty {
+    color: #a0aec0;
+    font-size: 13px;
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.sala-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #84CEF9;
+    border-radius: 20px;
+    padding: 6px 12px 6px 16px;
+    font-size: 13px;
+    color: #2d3748;
+}
+
+.sala-chip button {
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    cursor: pointer;
+    font-size: 18px !important;
+    font-weight: bold;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: auto !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.sala-chip button:hover {
+    transform: scale(1.2) !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Ajuste para o dropdown de salas no AlunoInfo */
+.salas-search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.salas-search-dropdown li {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #4a5568;
+    font-size: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salas-search-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.salas-search-dropdown li:hover {
+    background-color: #f0f9ff;
+}
+
+.salas-search-dropdown li strong {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.salas-search-dropdown li .aluno-sala-badge {
+    font-size: 11px;
+    color: #718096;
+    background: #edf2f7;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.sala-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #84CEF9;
+    border-radius: 20px;
+    padding: 6px 12px 6px 16px;
+    font-size: 13px;
+    color: #2d3748;
+    transition: all 0.2s;
+}
+
+.sala-chip:hover {
+    border-color: #76C5F2;
+    background: #f0f9ff;
+}
+
+.sala-chip button {
+    background: none !important;
+    border: none !important;
+    color: #e53e3e !important;
+    cursor: pointer;
+    font-size: 18px !important;
+    font-weight: bold;
+    padding: 0 4px !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: auto !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    line-height: 1;
+}
+
+.sala-chip button:hover {
+    transform: scale(1.2) !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+
+.salas-selecionadas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    min-height: 50px;
+}
+
+.salas-selecionadas-empty {
+    color: #a0aec0;
+    font-size: 13px;
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    padding: 4px 0;
+}
+

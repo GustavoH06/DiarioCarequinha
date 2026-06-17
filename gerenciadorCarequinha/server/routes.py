@@ -1,15 +1,16 @@
 from flask import request, jsonify
-from models import Alunos, Salas, Competencia, Presenca
+from models import Alunos, Salas, Competencia, Presenca, Desempenho
+import csv
+import io
 
 def register_routes(app, db):
-
 
     @app.route('/api/alunos', methods=['GET', 'POST'])
     def alunos():
         if request.method == 'GET':
             return jsonify([a.to_dict() for a in Alunos.query.all()]), 200
 
-        data  = request.get_json()
+        data = request.get_json()
         aluno = Alunos(
             nome            = data.get('nome'),
             data_nascimento = data.get('dataNascimento'),
@@ -18,12 +19,51 @@ def register_routes(app, db):
             nome_pai2       = data.get('nomePai2') or None,
             endereco        = data.get('endereco'),
             numero          = data.get('numero'),
-            idade           = data.get('idade'),
             sexo            = data.get('sexo'),
         )
         db.session.add(aluno)
         db.session.commit()
         return jsonify(aluno.to_dict()), 201
+
+    def criar_aluno_do_dict(data, erros, idx):
+        nome = data.get('nome', '').strip()
+        if not nome:
+            erros.append(f'Registro {idx+1}: Nome é obrigatório - ignorado')
+            return None
+        
+        data_nascimento = data.get('dataNascimento', '').strip()
+        if not data_nascimento:
+            erros.append(f'Aluno "{nome}": Data de nascimento é obrigatória - ignorado')
+            return None
+        
+        existing = Alunos.query.filter_by(nome=nome).first()
+        if existing:
+            erros.append(f'Aluno "{nome}" já existe - ignorado')
+            return None
+        
+        aluno = Alunos(
+            nome=nome,
+            data_nascimento=data_nascimento,
+            telefone=data.get('telefone', '').strip() or None,
+            nome_pai1=data.get('nomePai1', '').strip() or None,
+            nome_pai2=data.get('nomePai2', '').strip() or None,
+            endereco=data.get('endereco', '').strip() or None,
+            numero=data.get('numero', '').strip() or None,
+            sexo=data.get('sexo', '').strip() or None,
+        )
+        
+        db.session.add(aluno)
+        db.session.flush()
+        
+        sala_nome = data.get('sala', '').strip()
+        if sala_nome:
+            sala = Salas.query.filter_by(nome=sala_nome).first()
+            if sala:
+                sala.alunos.append(aluno)
+            else:
+                erros.append(f'Sala "{sala_nome}" não encontrada para aluno "{aluno.nome}"')
+        
+        return aluno.to_dict()
 
     @app.route('/api/alunos/<int:pid>', methods=['GET', 'PUT', 'DELETE'])
     def aluno(pid):
@@ -49,7 +89,6 @@ def register_routes(app, db):
         db.session.delete(aluno)
         db.session.commit()
         return jsonify({'message': f'Aluno {pid} removido'}), 200
-
 
     @app.route('/api/alunos/<int:pid>/competencias', methods=['GET', 'POST'])
     def competencias(pid):
@@ -79,7 +118,60 @@ def register_routes(app, db):
         db.session.add(comp)
         db.session.commit()
         return jsonify(comp.to_dict()), 201
-
+    
+    @app.route('/api/alunos/bulk', methods=['POST'])
+    def bulk_create_alunos():
+        if 'file' not in request.files:
+            return jsonify({'error': 'Nenhum arquivo enviado'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'Nome de arquivo vazio'}), 400
+        
+        if not (file.filename.endswith('.csv') or file.filename.endswith('.json')):
+            return jsonify({'error': 'Formato de arquivo inválido. Use .csv ou .json'}), 400
+        
+        try:
+            content = file.read().decode('utf-8')
+            
+            alunos_criados = []
+            erros = []
+            
+            if content.strip().startswith('[') or content.strip().startswith('{'):
+                import json
+                dados = json.loads(content)
+                if isinstance(dados, dict):
+                    dados = [dados]
+                for idx, item in enumerate(dados):
+                    try:
+                        aluno = criar_aluno_do_dict(item, erros, idx)
+                        if aluno:
+                            alunos_criados.append(aluno)
+                    except Exception as e:
+                        erros.append(f'Erro no registro {idx+1}: {str(e)}')
+            else:
+                csv_reader = csv.DictReader(io.StringIO(content))
+                for idx, row in enumerate(csv_reader):
+                    try:
+                        aluno = criar_aluno_do_dict(row, erros, idx)
+                        if aluno:
+                            alunos_criados.append(aluno)
+                    except Exception as e:
+                        erros.append(f'Erro na linha {idx+2}: {str(e)}')
+            
+            db.session.commit()
+            
+            return jsonify({
+                'message': f'{len(alunos_criados)} alunos importados com sucesso',
+                'alunos': alunos_criados,
+                'erros': erros,
+                'total_criados': len(alunos_criados),
+                'total_erros': len(erros)
+            }), 201
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 500
 
     @app.route('/api/salas', methods=['GET', 'POST'])
     def salas():
@@ -139,7 +231,6 @@ def register_routes(app, db):
             sala.alunos.remove(aluno)
             db.session.commit()
         return jsonify(sala.to_dict()), 200
-
 
     @app.route('/api/salas/<int:sid>/presencas', methods=['GET'])
     def listar_presencas(sid):
@@ -222,3 +313,57 @@ def register_routes(app, db):
             db.session.commit()
         
         return jsonify(aluno.to_dict()), 200
+
+    @app.route('/api/alunos/<int:pid>/notas', methods=['PUT'])
+    def atualizar_notas_aluno(pid):
+        aluno = Alunos.query.get_or_404(pid)
+        data = request.get_json()
+        
+        aluno.notas = data.get('notas', '')
+        db.session.commit()
+        
+        return jsonify(aluno.to_dict()), 200
+
+    @app.route('/api/alunos/<int:pid>/desempenho', methods=['POST'])
+    def salvar_desempenho(pid):
+        Alunos.query.get_or_404(pid)
+        data = request.get_json()
+        
+        item_id = data.get('itemId')
+        periodo = data.get('periodo')
+        valor = data.get('valor')
+        
+        existente = Desempenho.query.filter_by(
+            aluno_id=pid, item_id=item_id
+        ).first()
+        
+        if existente:
+            if periodo == 'periodo1':
+                existente.periodo1 = valor
+            elif periodo == 'periodo2':
+                existente.periodo2 = valor
+            elif periodo == 'periodo3':
+                existente.periodo3 = valor
+            db.session.commit()
+            return jsonify(existente.to_dict()), 200
+        
+        novo = Desempenho(
+            aluno_id=pid,
+            item_id=item_id,
+            periodo1=valor if periodo == 'periodo1' else None,
+            periodo2=valor if periodo == 'periodo2' else None,
+            periodo3=valor if periodo == 'periodo3' else None,
+        )
+        db.session.add(novo)
+        db.session.commit()
+        return jsonify(novo.to_dict()), 201
+    
+    @app.route('/api/salas/<int:sid>/notas', methods=['PUT'])
+    def atualizar_notas_sala(sid):
+        sala = Salas.query.get_or_404(sid)
+        data = request.get_json()
+        
+        sala.notas = data.get('notas', '')
+        db.session.commit()
+        
+        return jsonify(sala.to_dict()), 200
