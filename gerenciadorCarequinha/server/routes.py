@@ -79,6 +79,8 @@ def register_routes(app, db):
         db.session.add(comp)
         db.session.commit()
         return jsonify(comp.to_dict()), 201
+    
+    
 
 
     @app.route('/api/salas', methods=['GET', 'POST'])
