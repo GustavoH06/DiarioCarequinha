@@ -92,8 +92,8 @@ export default function BulkImportModal({ isOpen, onClose, onImportSuccess }) {
 
                         <div className="format-info">
                             <h4>Campos suportados:</h4>
-                            <p><strong>Obrigatórios:</strong> nome, dataNascimento</p>
-                            <p><strong>Opcionais:</strong> telefone, nomePai1, nomePai2, endereco, numero, idade, sexo, sala</p>
+                            <p><strong>Obrigatórios:</strong> nome </p>
+                            <p><strong>Opcionais:</strong> dataNascimento, telefone, nomePai1, nomePai2, endereco, numero, sexo, sala</p>
                             <p><small>Importante: O campo "sala" deve corresponder ao nome exato de uma sala existente.</small></p>
                         </div>
 

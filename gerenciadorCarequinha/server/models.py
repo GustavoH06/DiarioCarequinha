@@ -1,4 +1,6 @@
+
 from app import db
+from datetime import datetime, date
 
 sala_alunos = db.Table(
     'sala_alunos',
@@ -44,13 +46,35 @@ class Presenca(db.Model):
             'presente': self.presente,
         }
 
-class Alunos(db.Model):
+# ============================================
+# NOVA CLASSE: DESEMPENHO
+# ============================================
+class Desempenho(db.Model):
+    __tablename__ = 'desempenho'
 
+    id          = db.Column(db.Integer, primary_key=True)
+    aluno_id    = db.Column(db.Integer, db.ForeignKey('alunos.pid'), nullable=False)
+    item_id     = db.Column(db.Text, nullable=False)
+    periodo1    = db.Column(db.Text)
+    periodo2    = db.Column(db.Text)
+    periodo3    = db.Column(db.Text)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'alunoId': self.aluno_id,
+            'itemId': self.item_id,
+            'periodo1': self.periodo1,
+            'periodo2': self.periodo2,
+            'periodo3': self.periodo3,
+        }
+
+class Alunos(db.Model):
     __tablename__ = 'alunos'
 
     pid             = db.Column(db.Integer, primary_key=True)
-    nome            = db.Column(db.Text, nullable = False)
-    data_nascimento = db.Column(db.Text, nullable = False)
+    nome            = db.Column(db.Text, nullable=False)
+    data_nascimento = db.Column(db.Text, nullable=False)
     telefone        = db.Column(db.Text)
     nome_pai1       = db.Column(db.Text)
     nome_pai2       = db.Column(db.Text)
@@ -61,9 +85,26 @@ class Alunos(db.Model):
     notas           = db.Column(db.Text)
 
     competencias = db.relationship('Competencia', backref='aluno', lazy=True, cascade='all, delete-orphan')
+    desempenho   = db.relationship('Desempenho', backref='aluno', lazy=True, cascade='all, delete-orphan')
+
+    def calcular_idade(self):
+        if not self.data_nascimento:
+            return None
+        try:
+            nascimento = datetime.strptime(self.data_nascimento, '%Y-%m-%d').date()
+            hoje = date.today()
+            
+            idade = hoje.year - nascimento.year
+            if (hoje.month, hoje.day) < (nascimento.month, nascimento.day):
+                idade -= 1
+            return idade
+        except:
+            return None
 
     def to_dict(self):
-        return{
+        idade_calculada = self.calcular_idade()
+        
+        return {
             'pid':              self.pid,
             'nome':             self.nome,
             'dataNascimento':   self.data_nascimento,
@@ -72,11 +113,12 @@ class Alunos(db.Model):
             'nomePai2':         self.nome_pai2,
             'endereco':         self.endereco,
             'numero':           self.numero,
-            'idade':            self.idade,
+            'idade':            idade_calculada,
             'sexo':             self.sexo,
             'salas':            [{'sid': s.sid, 'nome': s.nome, 'tipo': s.tipo} for s in self.salas],
             'competencias':     [c.to_dict() for c in self.competencias],
-            'notas': self.notas,
+            'notas':            self.notas,
+            'desempenho':       [d.to_dict() for d in self.desempenho],
         }
     
     def __repr__(self):
@@ -104,7 +146,7 @@ class Salas(db.Model):
             'horarioTermino': self.horario_termino,
             'alunos':         [{'pid': a.pid, 'nome': a.nome} for a in self.alunos],
             'totalAlunos':    len(self.alunos),
-            'notas': self.notas,
+            'notas':          self.notas,
         }
  
     def __repr__(self):

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { API_ALUNOS } from '../hooks/configApi';
+import { API_ALUNOS, API_SALAS } from '../hooks/configApi';
 import NotasEditor from '../blueprints/NotasEditor';
 
 
@@ -382,6 +382,11 @@ export default function AlunoInfo() {
     const [formData, setFormData] = useState({});
     const [saving, setSaving] = useState(false);
 
+    const [todasSalas, setTodasSalas] = useState([]);
+    const [salaSearch, setSalaSearch] = useState('');
+    const [salaDropdownOpen, setSalaDropdownOpen] = useState(false);
+    const [salasSelecionadas, setSalasSelecionadas] = useState([]);
+
     const [compMap, setCompMap] = useState({});
     const [expandedC, setExpandedC] = useState(null);
     const [expandedSub, setExpandedSub] = useState({});
@@ -391,7 +396,10 @@ export default function AlunoInfo() {
 
     const [competenciasAtivas, setCompetenciasAtivas] = useState(null);
 
-    useEffect(() => { fetchAluno(); }, [pid]);
+    useEffect(() => { 
+        fetchAluno();
+        fetchTodasSalas(); 
+    }, [pid]);
 
     function getCompetenciasByTipo(tipos) {
         if (!tipos || tipos.length === 0) return null;
@@ -413,6 +421,10 @@ export default function AlunoInfo() {
             const data = await res.json();
             setAluno(data);
             setFormData(data);
+
+            if (data.salas) {
+                setSalasSelecionadas(data.salas.map(s => ({ sid: s.sid, nome: s.nome, tipo: s.tipo })));
+            }
 
             let tiposSalas = [];
             
@@ -446,9 +458,39 @@ export default function AlunoInfo() {
         }
     }
 
+    async function fetchTodasSalas() {
+        try {
+            const res = await fetch(API_SALAS);
+            if (res.ok) {
+                setTodasSalas(await res.json());
+            }
+        } catch (err) {
+            console.error('Erro ao carregar salas:', err);
+        }
+    }
+
     function handleChange(e) {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    const salasFiltradas = todasSalas.filter(s =>
+        s.nome.toLowerCase().includes(salaSearch.toLowerCase()) &&
+        !salasSelecionadas.find(sel => sel.sid === s.sid)
+    );
+
+    function handleChange(e) {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    function selectSala(sala) {
+        setSalasSelecionadas(prev => [...prev, { sid: sala.sid, nome: sala.nome, tipo: sala.tipo }]);
+        setSalaSearch('');
+    }
+
+    function removeSala(sid) {
+        setSalasSelecionadas(prev => prev.filter(s => s.sid !== sid));
     }
 
     async function handleSaveAluno() {
@@ -459,9 +501,24 @@ export default function AlunoInfo() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            if (!res.ok) throw new Error('Erro ao salvar');
+
+            if (!res.ok) throw new Error('Erro ao salvar dados do aluno');
             const alunoAtualizado = await res.json();
-            setAluno(alunoAtualizado);
+            
+            const salasAtuais = aluno.salas?.map(s => s.sid) || [];
+            const novasSalas = salasSelecionadas.map(s => s.sid);
+            
+            const salasParaRemover = salasAtuais.filter(sid => !novasSalas.includes(sid));
+            for (const sid of salasParaRemover) {
+                await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'DELETE' });
+            }
+            
+            const salasParaAdicionar = novasSalas.filter(sid => !salasAtuais.includes(sid));
+            for (const sid of salasParaAdicionar) {
+                await fetch(`${API_SALAS}/${sid}/alunos/${pid}`, { method: 'POST' });
+            }
+            
+            await fetchAluno();
             setEditMode(false);
             alert('Dados do aluno salvos com sucesso!');
         } catch (err) {
@@ -661,6 +718,7 @@ export default function AlunoInfo() {
                             <span className="info-value">{aluno.numero || '—'}</span>
                         )}
                     </div>
+    
                 </div>
             </div>
 
