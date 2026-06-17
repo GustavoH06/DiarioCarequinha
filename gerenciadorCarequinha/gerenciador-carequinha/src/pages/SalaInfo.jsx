@@ -1,7 +1,6 @@
-// pages/SalaInfo.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { API_ALUNOS } from '../hooks/configApi';
+import { API_ALUNOS, API_SALAS } from '../hooks/configApi';
 
 function hojeISO() {
     return new Date().toISOString().split('T')[0];
@@ -198,7 +197,6 @@ export default function SalaInfo() {
                                 <option value="">Selecione...</option>
                                 <option value="Berçario">Berçario</option>
                                 <option value="Maternal">Maternal</option>
-                                <option value="Jardim">Jardim</option>
                                 <option value="Primário">Primário</option>
                             </select>
                         ) : (
@@ -374,6 +372,7 @@ export default function SalaInfo() {
                     </>
                 )}
             </div>
+            
         </div>
     );
 }

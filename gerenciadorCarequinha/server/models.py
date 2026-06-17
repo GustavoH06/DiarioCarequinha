@@ -58,6 +58,7 @@ class Alunos(db.Model):
     numero          = db.Column(db.Text)
     idade           = db.Column(db.Integer)
     sexo            = db.Column(db.Text)
+    notas           = db.Column(db.Text)
 
     competencias = db.relationship('Competencia', backref='aluno', lazy=True, cascade='all, delete-orphan')
 
@@ -73,9 +74,9 @@ class Alunos(db.Model):
             'numero':           self.numero,
             'idade':            self.idade,
             'sexo':             self.sexo,
-            'salas':            [{'sid': s.sid, 'nome': s.nome} for s in self.salas],
+            'salas':            [{'sid': s.sid, 'nome': s.nome, 'tipo': s.tipo} for s in self.salas],
             'competencias':     [c.to_dict() for c in self.competencias],
-
+            'notas': self.notas,
         }
     
     def __repr__(self):
@@ -90,7 +91,7 @@ class Salas(db.Model):
     turno           = db.Column(db.Text, nullable=False)
     horario_inicio  = db.Column(db.Text)
     horario_termino = db.Column(db.Text)
- 
+    notas           = db.Column(db.Text)
     alunos = db.relationship('Alunos', secondary=sala_alunos, backref='salas')
  
     def to_dict(self):
@@ -103,8 +104,8 @@ class Salas(db.Model):
             'horarioTermino': self.horario_termino,
             'alunos':         [{'pid': a.pid, 'nome': a.nome} for a in self.alunos],
             'totalAlunos':    len(self.alunos),
+            'notas': self.notas,
         }
  
     def __repr__(self):
         return f'<Sala {self.nome}>'
-    

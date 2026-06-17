@@ -211,3 +211,14 @@ def register_routes(app, db):
         db.session.delete(registro)
         db.session.commit()
         return jsonify({'message': f'Registro {registro_id} removido'}), 200
+
+    @app.route('/api/alunos/salas/<int:sid>/alunos/<int:pid>', methods=['POST'])
+    def add_aluno_to_sala_direct(sid, pid):
+        sala = Salas.query.get_or_404(sid)
+        aluno = Alunos.query.get_or_404(pid)
+        
+        if aluno not in sala.alunos:
+            sala.alunos.append(aluno)
+            db.session.commit()
+        
+        return jsonify(aluno.to_dict()), 200

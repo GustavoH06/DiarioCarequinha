@@ -42,8 +42,10 @@ export default function AlunoForm() {
   const [salaDropdownOpen, setSalaDropdownOpen] = useState(false);
   const [salasSelecionadas, setSalasSelecionadas] = useState([]);
 
-  const { alunos, deleteAluno, createAluno, addAlunoToSala } = useAlunos();
+  const { alunos, deleteAluno, createAluno, addAlunoToSala , fetchAluno} = useAlunos();
   const { salas } = useSalas();
+
+
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -88,8 +90,11 @@ export default function AlunoForm() {
         await addAlunoToSala(sala.sid, novoAluno.pid);
       }
 
+      const alunoAtualizado = await fetchAluno(novoAluno.pid);
+
       setFormData(emptyForm);
       setSalasSelecionadas([]);
+      setTimeout(() => setSubmitError(null), 3000);
     } catch (err) {
       setSubmitError(err.message);
     } finally {

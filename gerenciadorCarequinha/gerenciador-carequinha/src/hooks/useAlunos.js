@@ -62,5 +62,32 @@ export function useAlunos() {
     return res.json();
   }
 
-  return { alunos, loading, error, createAluno, updateAluno, deleteAluno, saveCompetencia };
+  //Add Aluno
+  async function addAlunoToSala(sid, pid) {
+    const res = await fetch(`${API_ALUNOS}/salas/${sid}/alunos/${pid}`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error('Erro ao adicionar aluno à sala');
+    
+    //Retorna o aluno atualizado
+    const alunoRes = await fetch(`${API_ALUNOS}/${pid}`);
+    if (alunoRes.ok) {
+      const alunoAtualizado = await alunoRes.json();
+      setAlunos(prev => prev.map(a => a.pid === pid ? alunoAtualizado : a));
+    }
+    return res.json();
+  }
+
+  //Buscar aluno
+  async function fetchAluno(pid) {
+    const res = await fetch(`${API_ALUNOS}/${pid}`);
+    if (!res.ok) throw new Error('Aluno não encontrado');
+    return res.json();
+  }
+
+  return { 
+    alunos, loading, error, 
+    createAluno, updateAluno, deleteAluno, 
+    saveCompetencia, addAlunoToSala, fetchAluno 
+  };
 }

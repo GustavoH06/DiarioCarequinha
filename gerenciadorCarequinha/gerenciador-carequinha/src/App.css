@@ -2100,3 +2100,377 @@ select:focus,
     transform: none;
     box-shadow: none;
 }
+
+/* Adicione estas regras ao seu CSS */
+
+/* ============================================
+   REGISTRO DE DESEMPENHO
+   ============================================ */
+.desempenho-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.desempenho-periodos {
+    padding: 12px 20px 16px 77px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fafbfc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.desempenho-opcoes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.periodo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.periodo-item label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.periodo-item select {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.periodo-item select:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+.periodo-item textarea {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.periodo-item textarea:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+.projeto-container .subitem-texto {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+}
+
+.projeto-periodos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.projeto-periodos .periodo-item textarea {
+    min-height: 60px;
+}
+
+.subitem-container .subitem-header {
+    cursor: default !important;
+}
+
+.subitem-container .subitem-header:hover {
+    background: transparent !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .desempenho-opcoes,
+    .projeto-periodos {
+        grid-template-columns: 1fr;
+    }
+    
+    .desempenho-periodos {
+        padding-left: 20px;
+    }
+}
+
+/* Adicione estas regras ao seu CSS */
+
+/* ============================================
+   REGISTRO DE DESEMPENHO
+   ============================================ */
+.desempenho-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.desempenho-periodos {
+    padding: 12px 20px 16px 77px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fafbfc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.desempenho-opcoes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.periodo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.periodo-item label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.periodo-item select {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.periodo-item select:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+.periodo-item textarea {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.periodo-item textarea:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+}
+
+.projeto-container .subitem-texto {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+}
+
+.projeto-periodos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.projeto-periodos .periodo-item textarea {
+    min-height: 60px;
+}
+
+.subitem-container .subitem-header {
+    cursor: default !important;
+}
+
+.subitem-container .subitem-header:hover {
+    background: transparent !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .desempenho-opcoes,
+    .projeto-periodos {
+        grid-template-columns: 1fr;
+    }
+    
+    .desempenho-periodos {
+        padding-left: 20px;
+    }
+}
+
+.notas-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 100px;
+    background-color: #fafbfc;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.notas-textarea:focus {
+    outline: none;
+    border-color: #84CEF9;
+    box-shadow: 0 0 0 2px rgba(132, 206, 249, 0.2);
+    background-color: white;
+}
+
+.notas-content {
+    padding: 12px 16px;
+    background: #fafbfc;
+    border-radius: 8px;
+    min-height: 60px;
+}
+
+.notas-text {
+    color: #4a5568;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.notas-empty {
+    color: #a0aec0;
+    font-size: 14px;
+    margin: 0;
+    font-style: italic;
+}
+
+.notas-info-section {
+    margin-top: 8px;
+    width: 100%;
+}
+
+.notas-info-content {
+    margin-top: 8px;
+}
+
+.notas-info-text {
+    color: #4a5568;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #84CEF9;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.form-header h2 {
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-editar {
+    background: linear-gradient(135deg, #84CEF9 0%, #76C5F2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-editar i {
+    font-size: 16px;
+}
+
+.btn-salvar {
+    background: #48bb78;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-cancelar {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .form-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .form-header h2 {
+        text-align: center;
+    }
+    
+    .form-actions {
+        justify-content: center;
+    }
+    
+    .btn-editar,
+    .btn-salvar,
+    .btn-cancelar {
+        flex: 1;
+        justify-content: center;
+    }
+}

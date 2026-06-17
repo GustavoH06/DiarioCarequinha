@@ -1,95 +1,67 @@
 import { useState } from 'react';
-import { useAlunos } from '../hooks/useAlunos';
 import { useSalas } from '../hooks/useSalas';
-import AlunosListComp from '../blueprints/AlunosListComp';
+import SalasListComp from '../blueprints/SalasListComp';
 
 const emptyForm = {
-  nome: '',
-  dataNascimento: '',
-  telefone: '',
-  nomePai1: '',
-  nomePai2: '',
-  endereco: '',
-  numero: '',
-  idade: '',
-  sexo: '',
+  nome:           '',
+  tipo:           '',
+  turno:          '',
+  horarioInicio:  '',
+  horarioTermino: '',
 };
 
-function formatarTelefone(valor) {
-  const digits = valor.replace(/\D/g, '').slice(0, 13);
-  if (digits.length === 0) return '';
-  if (digits.length <= 2)  return `+${digits}`;
-  if (digits.length <= 4)  return `+${digits.slice(0,2)} (${digits.slice(2)}`;
-  if (digits.length <= 9)  return `+${digits.slice(0,2)} (${digits.slice(2,4)}) ${digits.slice(4)}`;
-  if (digits.length <= 13) {
-    const local = digits.slice(4);
-    const cut = local.length === 9 ? 5 : 4;
-    return `+${digits.slice(0,2)} (${digits.slice(2,4)}) ${local.slice(0,cut)}-${local.slice(cut)}`;
-  }
-  return valor;
-}
-
-function telefoneValido(tel) {
-  return /^\+\d{2} \(\d{2}\) \d{4,5}-\d{4}$/.test(tel);
-}
-
-export default function AlunoForm() {
-  const [formData, setFormData] = useState(emptyForm);
+export default function SalaForm() {
+  const [formData,    setFormData]    = useState(emptyForm);
   const [submitError, setSubmitError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading,     setLoading]     = useState(false);
 
-  const [salaSearch, setSalaSearch] = useState('');
-  const [salaDropdownOpen, setSalaDropdownOpen] = useState(false);
-  const [salasSelecionadas, setSalasSelecionadas] = useState([]);
+  const [alunoSearch,        setAlunoSearch]        = useState('');
+  const [alunoDropdownOpen,  setAlunoDropdownOpen]  = useState(false);
+  const [alunosSelecionados, setAlunosSelecionados] = useState([]);
 
-  const { alunos, deleteAluno, createAluno, addAlunoToSala } = useAlunos();
-  const { salas } = useSalas();
+  const { salas, createSala, deleteSala, searchAlunos } = useSalas();
+
+  const [todosAlunos, setTodosAlunos] = useState([]);
+
+  async function abrirDropdown() {
+    if (!alunoDropdownOpen && todosAlunos.length === 0) {
+      const results = await searchAlunos('');
+      setTodosAlunos(results);
+    }
+    setAlunoDropdownOpen(o => !o);
+  }
+
+  const alunosFiltrados = todosAlunos.filter(a =>
+    a.nome.toLowerCase().includes(alunoSearch.toLowerCase()) &&
+    !alunosSelecionados.find(sel => sel.pid === a.pid)
+  );
+
+  function selectAluno(aluno) {
+    setAlunosSelecionados(prev => [...prev, { pid: aluno.pid, nome: aluno.nome }]);
+    setAlunoSearch('');
+  }
+
+  function removeAluno(pid) {
+    setAlunosSelecionados(prev => prev.filter(a => a.pid !== pid));
+  }
 
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   }
 
-  function handleTelefone(e) {
-    setFormData(prev => ({ ...prev, telefone: formatarTelefone(e.target.value) }));
-  }
-
-  const salasFiltradas = salas.filter(s =>
-    s.nome.toLowerCase().includes(salaSearch.toLowerCase()) &&
-    !salasSelecionadas.find(sel => sel.sid === s.sid)
-  );
-
-  function selectSala(sala) {
-    setSalasSelecionadas(prev => [...prev, { sid: sala.sid, nome: sala.nome }]);
-    setSalaSearch('');
-  }
-
-  function removeSala(sid) {
-    setSalasSelecionadas(prev => prev.filter(s => s.sid !== sid));
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
-    if (formData.telefone && !telefoneValido(formData.telefone)) {
-      setSubmitError('Telefone inválido. Use o formato +55 (XX) XXXXX-XXXX');
-      return;
-    }
     setLoading(true);
     setSubmitError(null);
     try {
-      const novoAluno = await createAluno({
+      await createSala({
         ...formData,
-        idade:    formData.idade ? parseInt(formData.idade) : null,
-        nomePai1: formData.nomePai1 || null,
-        nomePai2: formData.nomePai2 || null,
+        alunoIds: alunosSelecionados.map(a => a.pid),
       });
-
-      for (const sala of salasSelecionadas) {
-        await addAlunoToSala(sala.sid, novoAluno.pid);
-      }
-
       setFormData(emptyForm);
-      setSalasSelecionadas([]);
+      setAlunosSelecionados([]);
+      setTodosAlunos([]);
     } catch (err) {
       setSubmitError(err.message);
     } finally {
@@ -99,123 +71,99 @@ export default function AlunoForm() {
 
   return (
     <div className="form-container">
-      <h1>Cadastrar Aluno</h1>
+      <h1>Cadastrar Sala</h1>
 
       {submitError && <p className="error-message">{submitError}</p>}
 
       <div className="form-body">
-        <h2>Dados do Aluno</h2>
-        <div className="form-grid">
+        <h2>Dados da Sala</h2>
+        <div className="form-grid-sala">
 
           <div className="form-input nome">
-            <label>Nome</label>
-            <input type="text" name="nome" placeholder="Ex: João Pedro"
+            <label>Nome da Sala</label>
+            <input type="text" name="nome" placeholder="Ex: Segundo Período"
               value={formData.nome} onChange={handleChange} required />
           </div>
 
-          <div className="form-input data">
-            <label>Data de Nascimento</label>
-            <input type="date" name="dataNascimento"
-              value={formData.dataNascimento} onChange={handleChange} required />
-          </div>
-
-          <div className="form-input idade">
-            <label>Idade</label>
-            <input type="number" name="idade" placeholder="Ex: 5"
-              value={formData.idade} onChange={handleChange} min="0" max="18" />
-          </div>
-
-          <div className="form-input sexo">
-            <label>Sexo</label>
-            <select name="sexo" value={formData.sexo} onChange={handleChange}>
+          <div className="form-input tipoSala">
+            <label>Tipo</label>
+            <select name="tipo" value={formData.tipo} onChange={handleChange} required>
               <option value="">Selecione...</option>
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
+              <option value="Berçario">Berçario</option>
+              <option value="Maternal">Maternal</option>
+              <option value="Primário">Primário</option>
             </select>
           </div>
 
-          <div className="form-input tel">
-            <label>Telefone</label>
-            <input
-              type="tel"
-              name="telefone"
-              placeholder="+55 (34) 99765-1344"
-              value={formData.telefone}
-              onChange={handleTelefone}
-            />
-            {formData.telefone && !telefoneValido(formData.telefone) && (
-              <span className="field-hint">Ex: +55 (34) 99765-1344</span>
-            )}
+          <div className="form-input turnoSala">
+            <label>Turno</label>
+            <select name="turno" value={formData.turno} onChange={handleChange} required>
+              <option value="">Selecione...</option>
+              <option value="Manhã">Manhã</option>
+              <option value="Tarde">Tarde</option>
+            </select>
           </div>
 
-          <div className="form-input pais">
-            <label>Responsáveis</label>
-            <input type="text" name="nomePai1" placeholder="Responsável 1"
-              value={formData.nomePai1} onChange={handleChange} />
-            <input type="text" name="nomePai2" placeholder="Responsável 2 (opcional)"
-              value={formData.nomePai2} onChange={handleChange}
-              style={{ marginTop: '8px' }} />
+          <div className="form-input horarioInicio">
+            <label>Horário Início</label>
+            <input type="time" name="horarioInicio"
+              value={formData.horarioInicio} onChange={handleChange} />
           </div>
 
-          <div className="form-input end">
-            <label>Endereço</label>
-            <input type="text" name="endereco"
-              placeholder="Ex: Rua do Limão, Bairro do Limoeiro"
-              value={formData.endereco} onChange={handleChange} />
-          </div>
-
-          <div className="form-input numero">
-            <label>Número</label>
-            <input type="text" name="numero" placeholder="Ex: 365"
-              value={formData.numero} onChange={handleChange} />
+          <div className="form-input horarioTermino">
+            <label>Horário Término</label>
+            <input type="time" name="horarioTermino"
+              value={formData.horarioTermino} onChange={handleChange} />
           </div>
 
         </div>
 
-        <h2>Salas</h2>
+        <h2>Alunos</h2>
 
         <div className="form-input alunosSearch">
-          <label>Adicionar à sala</label>
+          <label>Adicionar aluno</label>
           <div style={{ display: 'flex', gap: '8px' }}>
             <input
               type="text"
-              placeholder="Pesquisar sala..."
-              value={salaSearch}
-              onChange={e => { setSalaSearch(e.target.value); setSalaDropdownOpen(true); }}
-              onFocus={() => setSalaDropdownOpen(true)}
+              placeholder="Pesquisar pelo nome..."
+              value={alunoSearch}
+              onChange={e => { setAlunoSearch(e.target.value); if (!alunoDropdownOpen) setAlunoDropdownOpen(true); }}
+              onFocus={() => { if (!alunoDropdownOpen) abrirDropdown(); }}
               autoComplete="off"
             />
             <button
               type="button"
               className="btn-editar"
               style={{ whiteSpace: 'nowrap', marginTop: 0 }}
-              onClick={() => setSalaDropdownOpen(o => !o)}
+              onClick={abrirDropdown}
             >
-              {salaDropdownOpen ? 'Fechar ▲' : 'Ver todas ▼'}
+              {alunoDropdownOpen ? 'Fechar ▲' : 'Ver todos ▼'}
             </button>
           </div>
 
-          {salaDropdownOpen && (
+          {alunoDropdownOpen && (
             <ul className="search-dropdown">
-              {salasFiltradas.length === 0 && (
-                <li style={{ color: '#a0aec0', cursor: 'default' }}>Nenhuma sala encontrada</li>
+              {alunosFiltrados.length === 0 && (
+                <li style={{ color: '#a0aec0', cursor: 'default' }}>Nenhum aluno encontrado</li>
               )}
-              {salasFiltradas.map(s => (
-                <li key={s.sid} onClick={() => { selectSala(s); setSalaDropdownOpen(false); }}>
-                  <strong>{s.nome}</strong>
-                  <span className="aluno-sala-badge">{s.tipo} · {s.turno}</span>
+              {alunosFiltrados.map(a => (
+                <li key={a.pid} onClick={() => selectAluno(a)}>
+                  <strong>{a.nome}</strong>
+                  {a.salas?.length > 0 && (
+                    <span className="aluno-sala-badge">{a.salas.map(s => s.nome).join(', ')}</span>
+                  )}
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        {salasSelecionadas.length > 0 && (
+        {alunosSelecionados.length > 0 && (
           <div className="alunos-chips">
-            {salasSelecionadas.map(s => (
-              <span key={s.sid} className="aluno-chip">
-                {s.nome}
-                <button type="button" onClick={() => removeSala(s.sid)}>×</button>
+            {alunosSelecionados.map(a => (
+              <span key={a.pid} className="aluno-chip">
+                {a.nome}
+                <button type="button" onClick={() => removeAluno(a.pid)}>×</button>
               </span>
             ))}
           </div>
@@ -223,12 +171,12 @@ export default function AlunoForm() {
 
         <br />
         <button onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Cadastrando...' : 'Cadastrar Aluno'}
+          {loading ? 'Cadastrando...' : 'Cadastrar Sala'}
         </button>
       </div>
 
       <br />
-      <AlunosListComp alunos={alunos} onDelete={deleteAluno} />
+      <SalasListComp salas={salas} onDelete={deleteSala} />
     </div>
   );
 }

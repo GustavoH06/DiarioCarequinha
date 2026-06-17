@@ -7,7 +7,7 @@ function AlunoList() {
     const { alunos, deleteAluno } = useAlunos();
     const navigate = useNavigate();
 
-    const [filtros, setFiltros] = useState({ nome: '', turno: '', id: '', sala: '' });
+    const [filtros, setFiltros] = useState({ nome: '', sexo: '', id: '', sala: '' });
 
     function handleFilterChange(e) {
         const { name, value } = e.target;
@@ -15,7 +15,7 @@ function AlunoList() {
     }
 
     function limparFiltros() {
-        setFiltros({ nome: '', turno: '', id: '', sala: '' });
+        setFiltros({ nome: '', sexo: '', id: '', sala: '' });
     }
 
     const alunosFiltrados = alunos.filter(aluno => {
@@ -24,9 +24,9 @@ function AlunoList() {
         const nomeSalas = aluno.salas?.map(s => s.nome.toLowerCase()).join(' ') || '';
         const matchSala = nomeSalas.includes(filtros.sala.toLowerCase());
         
-        const turnoSalas = aluno.salas?.map(s => (s.turno || '').toLowerCase()).join(' ') || '';
-        const matchTurno = turnoSalas.includes(filtros.turno.toLowerCase());
-        return matchNome && matchId && matchSala && (filtros.turno === '' || matchTurno);
+        const matchSexo = filtros.sexo === '' || (aluno.sexo || '').toLowerCase() === filtros.sexo.toLowerCase();
+        
+        return matchNome && matchId && matchSala && matchSexo;
     });
 
     return (
@@ -52,8 +52,11 @@ function AlunoList() {
                         value={filtros.sala}  onChange={handleFilterChange} />
                     <input type="text" name="id"    placeholder="ID"
                         value={filtros.id}    onChange={handleFilterChange} />
-                    <input type="text" name="turno" placeholder="Turno"
-                        value={filtros.turno} onChange={handleFilterChange} />
+                    <select name="sexo" value={filtros.sexo} onChange={handleFilterChange}>
+                        <option value="">Todos os Sexos</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
                 </div>
                 <div className="filter-buttons">
                     <i className="bi bi-trash"  onClick={limparFiltros} title="Limpar Filtros" />
