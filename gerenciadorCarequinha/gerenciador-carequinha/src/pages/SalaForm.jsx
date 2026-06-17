@@ -52,6 +52,10 @@ export default function SalaForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!formData.nome || !formData.nome.trim()) {
+        setSubmitError('O campo "Nome" é obrigatório');
+        return;
+    }
     setLoading(true);
     setSubmitError(null);
     try {

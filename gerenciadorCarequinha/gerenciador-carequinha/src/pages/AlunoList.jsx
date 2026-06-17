@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAlunos } from '../hooks/useAlunos';
 import AlunosListComp from '../blueprints/AlunosListComp';
 import { useNavigate } from 'react-router';
+import BulkImportModal from '../blueprints/BulkImportModal';
 
 function AlunoList() {
-    const { alunos, deleteAluno } = useAlunos();
+    const { alunos, deleteAluno, fetchAlunos } = useAlunos();
     const navigate = useNavigate();
 
     const [filtros, setFiltros] = useState({ nome: '', sexo: '', id: '', sala: '' });
+    const [showBulkModal, setShowBulkModal] = useState(false);
 
     function handleFilterChange(e) {
         const { name, value } = e.target;
@@ -29,6 +31,10 @@ function AlunoList() {
         return matchNome && matchId && matchSala && matchSexo;
     });
 
+    const handleBulkImportSuccess = () => {
+        fetchAlunos(); // Recarregar a lista de alunos
+    };
+
     return (
         <div className="aluno-list-container">
             <h1>Lista de Alunos</h1>
@@ -41,6 +47,10 @@ function AlunoList() {
                 <div className="stats-card-top" onClick={() => navigate('/aluno-form')}
                     style={{ cursor: 'pointer', background: 'linear-gradient(135deg, #68d391, #38a169)', maxWidth: '200px' }}>
                     <span className="stats-label-top">+ Novo Aluno</span>
+                </div>
+                <div className="stats-card-top" onClick={() => setShowBulkModal(true)}
+                    style={{ cursor: 'pointer', background: 'linear-gradient(135deg, #84CEF9, #76C5F2)', maxWidth: '200px' }}>
+                    <span className="stats-label-top">📄 Adicionar por CSV</span>
                 </div>
             </div>
 
@@ -65,6 +75,13 @@ function AlunoList() {
             </div>
 
             <AlunosListComp alunos={alunosFiltrados} onDelete={deleteAluno} />
+
+            {/* Modal de importação em bulk */}
+            <BulkImportModal
+                isOpen={showBulkModal}
+                onClose={() => setShowBulkModal(false)}
+                onImportSuccess={handleBulkImportSuccess}
+            />
         </div>
     );
 }

@@ -2474,3 +2474,269 @@ select:focus,
         justify-content: center;
     }
 }
+
+/* Adicione ao seu CSS */
+.format-info {
+    background: #f7f9fc;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+
+.format-info h4 {
+    margin: 0 0 8px 0;
+    color: #2d3748;
+    font-size: 14px;
+}
+
+.format-info p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #4a5568;
+}
+
+.format-info small {
+    color: #718096;
+}
+
+.file-upload-label {
+    display: block;
+    padding: 30px 20px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    color: #a0aec0;
+    transition: all 0.2s;
+    background: #fafbfc;
+}
+
+.file-upload-label:hover {
+    border-color: #84CEF9;
+    background: #f0f9ff;
+}
+
+.file-upload-label input {
+    display: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 20px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #a0aec0;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.modal-close:hover {
+    color: #e53e3e;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    color: #4a5568;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.btn-template {
+    background: #edf2f7;
+    color: #4a5568;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-template:hover {
+    background: #e2e8f0;
+}
+
+.format-info {
+    background: #f7f9fc;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+
+.format-info h4 {
+    margin: 0 0 8px 0;
+    color: #2d3748;
+    font-size: 14px;
+}
+
+.format-info p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #4a5568;
+}
+
+.format-info small {
+    color: #718096;
+}
+
+.file-upload {
+    margin: 16px 0;
+}
+
+.file-upload-label {
+    display: block;
+    padding: 30px 20px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    color: #a0aec0;
+    transition: all 0.2s;
+    background: #fafbfc;
+}
+
+.file-upload-label:hover {
+    border-color: #84CEF9;
+    background: #f0f9ff;
+}
+
+.file-upload-label input {
+    display: none;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.result-message {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #c6f6d5;
+    border-radius: 8px;
+    color: #276749;
+}
+
+.errors-list {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #fed7d7;
+    border-radius: 8px;
+    color: #c53030;
+}
+
+.errors-list ul {
+    margin: 8px 0 0 20px;
+    padding: 0;
+    font-size: 13px;
+}
+
+.errors-list ul li {
+    margin: 4px 0;
+}
+
+.btn-cancelar {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-cancelar:hover {
+    background: #c53030;
+}
+
+.btn-salvar {
+    background: #48bb78;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-salvar:hover {
+    background: #38a169;
+}
+
+.btn-salvar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: #fed7d7;
+    border-radius: 8px;
+    color: #c53030;
+    font-size: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+        "nome nome data"
+        "sexo tel sala"
+        "pais pais ."
+        "end end numero";
+    gap: 20px;
+}
+
+.form-input.nome { grid-area: nome; }
+.form-input.data { grid-area: data; }
+.form-input.sexo { grid-area: sexo; }
+.form-input.tel { grid-area: tel; }
+.form-input.sala { grid-area: sala; }
+.form-input.pais { grid-area: pais; }
+.form-input.end { grid-area: end; }
+.form-input.numero { grid-area: numero; }

@@ -11,7 +11,6 @@ const emptyForm = {
   nomePai2: '',
   endereco: '',
   numero: '',
-  idade: '',
   sexo: '',
 };
 
@@ -42,10 +41,8 @@ export default function AlunoForm() {
   const [salaDropdownOpen, setSalaDropdownOpen] = useState(false);
   const [salasSelecionadas, setSalasSelecionadas] = useState([]);
 
-  const { alunos, deleteAluno, createAluno, addAlunoToSala , fetchAluno} = useAlunos();
+  const { alunos, deleteAluno, createAluno, addAlunoToSala, fetchAluno } = useAlunos();
   const { salas } = useSalas();
-
-
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -72,6 +69,10 @@ export default function AlunoForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!formData.nome || !formData.nome.trim()) {
+        setSubmitError('O campo "Nome" é obrigatório');
+        return;
+    }
     if (formData.telefone && !telefoneValido(formData.telefone)) {
       setSubmitError('Telefone inválido. Use o formato +55 (XX) XXXXX-XXXX');
       return;
@@ -81,7 +82,6 @@ export default function AlunoForm() {
     try {
       const novoAluno = await createAluno({
         ...formData,
-        idade:    formData.idade ? parseInt(formData.idade) : null,
         nomePai1: formData.nomePai1 || null,
         nomePai2: formData.nomePai2 || null,
       });
@@ -122,12 +122,6 @@ export default function AlunoForm() {
             <label>Data de Nascimento</label>
             <input type="date" name="dataNascimento"
               value={formData.dataNascimento} onChange={handleChange} required />
-          </div>
-
-          <div className="form-input idade">
-            <label>Idade</label>
-            <input type="number" name="idade" placeholder="Ex: 5"
-              value={formData.idade} onChange={handleChange} min="0" max="18" />
           </div>
 
           <div className="form-input sexo">

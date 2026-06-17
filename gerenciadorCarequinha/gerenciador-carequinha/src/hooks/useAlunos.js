@@ -88,6 +88,7 @@ export function useAlunos() {
   return { 
     alunos, loading, error, 
     createAluno, updateAluno, deleteAluno, 
-    saveCompetencia, addAlunoToSala, fetchAluno 
+    saveCompetencia, addAlunoToSala, fetchAluno,
+    fetchAlunos
   };
 }

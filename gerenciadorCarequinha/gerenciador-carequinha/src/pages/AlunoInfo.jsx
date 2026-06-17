@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { API_ALUNOS } from '../hooks/configApi';
+import NotasEditor from '../blueprints/NotasEditor';
 
 
 const COMPETENCIAS_BERCARIO = [
@@ -514,6 +515,23 @@ export default function AlunoInfo() {
         handleSaveDesempenho(itemId, periodo, value);
     }
 
+    async function handleSaveNotas(notas) {
+        const response = await fetch(`${API_ALUNOS}/${pid}/notas`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notas }),
+        });
+        
+        if (!response.ok) throw new Error('Erro ao salvar notas');
+        const data = await response.json();
+        
+        // Atualizar o estado do aluno
+        setAluno(prev => ({ ...prev, notas: data.notas }));
+        setFormData(prev => ({ ...prev, notas: data.notas }));
+        
+        return data;
+    }
+
     if (loading) return <div className="loading-message">Carregando...</div>;
     if (error) return <div className="error-message">{error}</div>;
     if (!aluno) return null;
@@ -579,7 +597,7 @@ export default function AlunoInfo() {
                     <div className="form-input idade">
                         <label>Idade</label>
                         {editMode ? (
-                            <input type="number" name="idade" value={formData.idade || ''} onChange={handleChange} min="0" max="18" />
+                            <span className="info-value">{aluno.idade || '—'}</span>
                         ) : (
                             <span className="info-value">{aluno.idade || '—'}</span>
                         )}
@@ -842,6 +860,17 @@ export default function AlunoInfo() {
                         </div>
                     );
                 })}
+            </div>
+            <br />
+
+            <h2>Notas</h2>
+            <div className="form-body">
+                <NotasEditor
+                    valorInicial={aluno.notas || ''}
+                    onSave={handleSaveNotas}
+                    placeholder="Digite suas anotações sobre este aluno..."
+                    label="Anotações sobre o aluno "
+                />
             </div>
             
         </div>

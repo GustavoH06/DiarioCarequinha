@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { API_ALUNOS, API_SALAS } from '../hooks/configApi';
+import NotasEditor from '../blueprints/NotasEditor';
 
 function hojeISO() {
     return new Date().toISOString().split('T')[0];
@@ -77,11 +78,11 @@ export default function SalaInfo() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            if (!res.ok) throw new Error('Erro ao salvar');
+            if (!res.ok) throw new Error(' Erro ao salvar');
             const atualizada = await res.json();
             setSala(atualizada);
             setEditMode(false);
-            alert('Dados da sala salvos com sucesso!');
+            alert(' Dados da sala salvos com sucesso!');
         } catch (err) {
             alert(err.message);
         } finally {
@@ -138,6 +139,22 @@ export default function SalaInfo() {
         } catch {
             alert('Erro ao registrar presença');
         }
+    }
+
+    async function handleSaveNotas(notas) {
+        const response = await fetch(`${API_SALAS}/${sid}/notas`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notas }),
+        });
+        
+        if (!response.ok) throw new Error('Erro ao salvar notas');
+        const data = await response.json();
+        
+        setSala(prev => ({ ...prev, notas: data.notas }));
+        setFormData(prev => ({ ...prev, notas: data.notas }));
+        
+        return data;
     }
 
     function registroDaData(aluno) {
@@ -371,6 +388,17 @@ export default function SalaInfo() {
                         )}
                     </>
                 )}
+            </div>
+            <br />
+
+            <div className="form-body">
+                <h2>Notas da Sala</h2>
+                <NotasEditor
+                    valorInicial={sala.notas || ''}
+                    onSave={handleSaveNotas}
+                    placeholder="Digite suas anotações sobre esta sala..."
+                    label="Anotações sobre a sala "
+                />
             </div>
             
         </div>
